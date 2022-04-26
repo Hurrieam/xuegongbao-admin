@@ -5,7 +5,7 @@ import {IResponse} from "@/types";
  * 添加一条回复留言
  * @param data
  */
-export const addComment = async (data) => {
+export const addComment = async (data): Promise<IResponse> => {
     return await post("/comment/add", data);
 };
 
@@ -22,14 +22,14 @@ export const getComments = async (start: number, limit: number): Promise<IRespon
  * 改变留言状态
  * @param id
  */
-export const changeStatus = async (id: number) => {
+export const changeStatus = async (id: number): Promise<IResponse> => {
     return await post("/comment/status", {id: id});
 }
 /**
  * 删除留言
  * @param id
  */
-export const deleteComment = async (id: number) => {
+export const deleteComment = async (id: number): Promise<IResponse> => {
     return await post("/comment/delete", {id: id});
 }
 
@@ -37,6 +37,6 @@ export const deleteComment = async (id: number) => {
  * 根据留言id获取详细信息，包含回复留言
  * @param id
  */
-export const getCommentDetails = async (id: number) => {
+export const getCommentDetails = async (id: number): Promise<IResponse> => {
     return await get("/comment/detail", {id: id});
 }

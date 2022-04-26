@@ -51,7 +51,7 @@ const Comment = () => {
     }
 
     const onDelete = async (record: IComment) => {
-        const {code} = await deleteComment(record.id);
+        const {code}: IResponse = await deleteComment(record.id);
         if (code != 10000) {
             Message.error("删除评论失败!");
             return;
@@ -60,10 +60,10 @@ const Comment = () => {
         Message.success("删除评论成功!");
     }
 
-    const doCallback = () => {
-        setVisible(false);
-        setData(data.map(item => item.id === currentItem.id ? {...currentItem, hasReply: true} : item));
+    const doCallback = (id: number) => {
+        setData(data.map(item => item.id === id ? {...currentItem, hasReply: true} : item));
     }
+
     const doHidden = () => {
         setVisible(false);
     }

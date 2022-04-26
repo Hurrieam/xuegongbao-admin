@@ -1,10 +1,12 @@
 import React, {useState, useEffect} from 'react';
-import {Table, Card, PaginationProps, Popconfirm, Button} from '@arco-design/web-react';
+import {Table, Card, PaginationProps, Popconfirm, Button, Message} from '@arco-design/web-react';
 import {IconPlus, IconDelete} from '@arco-design/web-react/icon';
 import PhoneEditor from "@/pages/phonebook/PhoneEditor";
+import {IResponse} from "@/types";
+import {deletePhoneNumber, getPhoneBook} from "@/api/phonebook";
 
-interface IPhoneBook {
-    id: number;
+export interface IPhoneBook {
+    id?: number;
     deptName: string;
     phone: string;
 }
@@ -25,21 +27,19 @@ const PhoneBook: React.FC = () => {
         fetchData();
     }, []);
 
-    const fetchData = () => {
-        const data = [
-            {id: 1, deptName: '财务部', phone: '123456789'},
-            {id: 2, deptName: '人事部', phone: '123456789'},
-            {id: 3, deptName: '销售部', phone: '123456789'},
-            {id: 4, deptName: '技术部', phone: '123456789'},
-            {id: 5, deptName: '行政部', phone: '123456789'},
-            {id: 6, deptName: '财务部', phone: '123456789'}
-        ];
-        setData(data);
+    const fetchData = async () => {
+        setLoading(true);
+        const {code, data}: IResponse = await getPhoneBook(pagination.current, pagination.pageSize);
+        if(code !=10000){
+            Message.error("获取数据失败");
+            setLoading(false);
+            return;
+        }
+        setData(data.items);
         setLoading(false);
     }
 
     const doCallback = () => {
-        setVisible(false);
         fetchData();
     }
 
@@ -78,8 +78,15 @@ const PhoneBook: React.FC = () => {
     const onAdd = () => {
         setVisible(true);
     }
-    const onDelete = (record: IPhoneBook) => {
-        console.log(record);
+
+    const onDelete =async (record: IPhoneBook) => {
+        const {code}: IResponse = await deletePhoneNumber(record.id);
+        if(code !=10000){
+            Message.error("删除失败");
+            return;
+        }
+        setData(data.filter(item => item.id !== record.id));
+        Message.success("删除成功");
     }
 
     const onChangeTable = (pagination) => {

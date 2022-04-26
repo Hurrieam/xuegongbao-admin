@@ -1,6 +1,6 @@
 import React, {Fragment, useEffect, useState} from 'react';
 import {Modal, Input, Message, Spin} from '@arco-design/web-react';
-import {IDetailModalProps} from "@/types";
+import {IDetailModalProps, IResponse} from "@/types";
 import {addComment, changeStatus, getCommentDetails} from "@/api/comment";
 import {IComment} from "@/pages/comment/index";
 import styles from "./style/index.module.less";
@@ -43,13 +43,14 @@ function CommentDetail({visible, data: id, callback, hidden}: IDetailModalProps)
             parentId: id
         };
         try {
-            const {code} = await addComment(reply);
+            const {code}: IResponse = await addComment(reply);
             if (code != 10000) {
                 Message.error(`回复留言失败，错误码：${code}`);
                 return;
             }
             await changeStatus(id);
             await fetchData(id);
+            callback(id);
             Message.success('回复成功!');
         } catch (e) {
             Message.error(`回复留言失败，错误信息：${e.message}`);

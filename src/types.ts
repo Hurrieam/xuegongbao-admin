@@ -1,7 +1,7 @@
 export interface IDetailModalProps {
     visible: boolean;
     data?: any;
-    callback: (e) => void;
+    callback?: (e) => void;
     hidden: () => void;
 }
 export interface IResponse{
