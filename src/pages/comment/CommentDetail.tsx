@@ -1,23 +1,52 @@
-import React, {useEffect} from 'react';
-import {Modal} from '@arco-design/web-react';
+import React, {useEffect, useState} from 'react';
+import {Modal, Input, Message} from '@arco-design/web-react';
 import {IDetailModalProps} from "@/types";
+import {addComment, changeStatus} from "@/api/comment";
+import {IComment} from "@/pages/comment/index";
 
-function CommentDetail({visible, id, callback, hidden}: IDetailModalProps) {
+const TextArea = Input.TextArea;
+
+function CommentDetail({visible, data, callback, hidden}: IDetailModalProps) {
+    const [replyContent, setReplyContent] = useState('');
     useEffect(() => {
-        fetchData();
-    }, [id]);
+        if (!data?.id) return;
+    }, [data]);
 
-    // TODO: 根据id获取评论详情
-    const fetchData = async () => {
-        console.log("fetch data");
-    };
-
-    const doOk = () => {
-        callback(id);
+    const doOk = async () => {
+        if (replyContent.length === 0) {
+            Message.error("请输入回复内容");
+            return;
+        }
+        const reply: IComment = {
+            openid: '00000000',
+            content: replyContent,
+            time: new Date().toLocaleDateString(),
+            parentId: data.id
+        };
+        try {
+            const {code} = await addComment(reply);
+            if (code != 10000) {
+                Message.error(`回复留言失败，错误码：${code}`);
+                return;
+            }
+            await changeStatus(data.id);
+            callback({...data, hasReply: true});
+            Message.success('回复成功!');
+        } catch (e) {
+            Message.error(`回复留言失败，错误信息：${e.message}`);
+        } finally {
+            clearReplyContent();
+            hidden();
+        }
     }
 
     const doCancel = () => {
+        clearReplyContent();
         hidden();
+    }
+
+    const clearReplyContent = () => {
+        setReplyContent('');
     }
     return (
         <Modal
@@ -28,10 +57,13 @@ function CommentDetail({visible, id, callback, hidden}: IDetailModalProps) {
             autoFocus={false}
             focusLock={true}
         >
-            <p>
-                You can customize modal body text by the current situation. This modal will be closed
-                immediately once you press the OK button.
-            </p>
+            <p>{data?.content}</p>
+            <TextArea
+                placeholder='回复此评论'
+                style={{height: '100px'}}
+                value={replyContent}
+                onChange={(v) => setReplyContent(v)}
+            />
         </Modal>
     )
 }

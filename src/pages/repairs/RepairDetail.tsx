@@ -2,10 +2,10 @@ import React, {useEffect} from 'react';
 import {Modal} from '@arco-design/web-react';
 import {IDetailModalProps} from "@/types";
 
-function RepairDetail({visible, id, callback, hidden}: IDetailModalProps) {
+function RepairDetail({visible, data, callback, hidden}: IDetailModalProps) {
     useEffect(() => {
         fetchData();
-    }, [id]);
+    }, [data]);
 
     // TODO: 根据id获取评论详情
     const fetchData = async () => {
@@ -13,7 +13,7 @@ function RepairDetail({visible, id, callback, hidden}: IDetailModalProps) {
     };
 
     const doOk = () => {
-        callback(id);
+        callback(data);
     }
 
     const doCancel = () => {

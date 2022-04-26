@@ -236,7 +236,7 @@ const Repairs: React.FC = () => {
                     border={true}
                 />
             </Card>
-            <RepairDetail visible={visible} id={currentId} callback={doCallback} hidden={doHidden}/>
+            <RepairDetail visible={visible} data={currentId} callback={doCallback} hidden={doHidden}/>
         </>
     );
 }

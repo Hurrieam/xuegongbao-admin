@@ -1,22 +1,25 @@
 import React, {useState, useEffect} from 'react';
-import {Table, Card, PaginationProps, Space, Button, Popconfirm, Badge} from '@arco-design/web-react';
+import {Table, Card, PaginationProps, Space, Button, Popconfirm, Badge, Message} from '@arco-design/web-react';
 import {IconDelete} from '@arco-design/web-react/icon';
-import dayjs from 'dayjs';
 import CommentDetail from "@/pages/comment/CommentDetail";
+import {deleteComment, getComments} from "@/api/comment";
+import {IResponse} from "@/types";
+import dayjs from 'dayjs';
 
-interface IComment {
-    id: number;
-    stuName: string;
+export interface IComment {
+    id?: number;
+    openid?: string;
+    parentId?: string;
     content: string;
     time: string;
-    status: boolean;
+    hasReply?: boolean;
 }
 
-function Comment() {
+const Comment = () => {
     const [data, setData] = useState<IComment[]>([]);
     const [loading, setLoading] = useState<boolean>(true);
     const [visible, setVisible] = useState(false);
-    const [currentId, setCurrentId] = useState<number>(0);
+    const [currentItem, setCurrentItem] = useState<IComment>();
     const [pagination, setPatination] = useState<PaginationProps>({
         sizeCanChange: true,
         showTotal: true,
@@ -29,33 +32,31 @@ function Comment() {
         fetchData();
     }, []);
 
-    function fetchData() {
-        const data = [
-            {id: 1, stuName: '张三', content: "山西省 忻州市 五台县", time: '2020-01-01', status: false},
-            {id: 2, stuName: '李四', content: "山西省 忻州市 五台县", time: '2020-01-01', status: true},
-            {id: 3, stuName: '王五', content: "山西省 忻州市 五台县", time: '2020-01-01', status: false},
-            {id: 4, stuName: '赵六', content: "山西省 忻州市 五台县", time: '2020-01-01', status: true},
-            {id: 5, stuName: '田七', content: "山西省 忻州市 五台县", time: '2020-01-01', status: false},
-            {id: 6, stuName: '田七', content: "山西省 忻州市 五台县", time: '2020-01-01', status: true},
-            {id: 7, stuName: '田七', content: "山西省 忻州市 五台县", time: '2020-01-01', status: true},
-            {id: 8, stuName: '田七', content: "山西省 忻州市 五台县", time: '2020-01-01', status: false},
-            {id: 9, stuName: '田七', content: "山西省 忻州市 五台县", time: '2020-01-01', status: true},
-            {id: 10, stuName: '田七', content: "山西省 忻州市 五台县", time: '2020-01-01', status: false},
-            {id: 11, stuName: '田七', content: "山西省 忻州市 五台县", time: '2020-01-01', status: true},
-            {id: 12, stuName: '田七', content: "山西省 忻州市 五台县", time: '2020-01-01', status: false},
-        ];
-        setData(data);
+    const fetchData = async () => {
+        setLoading(true);
+        const {code, data}: IResponse = await getComments(pagination.current, pagination.pageSize);
+        if (code != 10000) {
+            Message.error("获取评论失败");
+            setLoading(false);
+            return;
+        }
+        setData(data.items);
         setLoading(false);
     }
 
-
     const onView = (record: IComment) => {
-        setCurrentId(record.id);
+        setCurrentItem(record);
         setVisible(true);
     }
 
-    const onDelete = (record: IComment) => {
-        console.log(record);
+    const onDelete = async (record: IComment) => {
+        const {code} = await deleteComment(record.id);
+        if (code != 10000) {
+            Message.error("删除评论失败!");
+            return;
+        }
+        setData(data.filter(item => item.id !== record.id));
+        Message.success("删除评论成功!");
     }
 
     const doCallback = (newItem: IComment) => {
@@ -93,7 +94,7 @@ function Comment() {
         },
         {
             title: "是否回复",
-            dataIndex: 'status',
+            dataIndex: 'hasReply',
             render: (value: boolean) => (
                 <>
                     {
@@ -109,7 +110,7 @@ function Comment() {
             render: (_, record: IComment) => (
                 <>
                     <Space>
-                        <Button type="primary" size="small" onClick={() => onView(record)}>查看</Button>
+                        <Button type="primary" size="small" onClick={() => onView(record)}>回复</Button>
                         <Popconfirm
                             title='确定删除吗?'
                             onOk={() => onDelete(record)}
@@ -134,7 +135,7 @@ function Comment() {
                     border={true}
                 />
             </Card>
-            <CommentDetail visible={visible} id={currentId} callback={doCallback} hidden={doHidden}/>
+            <CommentDetail visible={visible} data={currentItem} callback={doCallback} hidden={doHidden}/>
         </>
     );
 }

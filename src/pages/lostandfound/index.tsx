@@ -137,7 +137,7 @@ function LostAndFound() {
                     border={true}
                 />
             </Card>
-            <LostAndFoundDetail visible={visible} id={currentId} callback={doCallback} hidden={doHidden}/>
+            <LostAndFoundDetail visible={visible} data={currentId} callback={doCallback} hidden={doHidden}/>
         </>
     );
 }
