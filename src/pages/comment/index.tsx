@@ -4,14 +4,15 @@ import {IconDelete} from '@arco-design/web-react/icon';
 import CommentDetail from "@/pages/comment/CommentDetail";
 import {deleteComment, getComments} from "@/api/comment";
 import {IResponse} from "@/types";
-import dayjs from 'dayjs';
+import {formatDate} from "@/utils/date";
+import {substrAndEllipsis} from "@/utils/string";
 
 export interface IComment {
     id?: number;
     openid?: string;
     parentId?: string;
     content: string;
-    time: string;
+    createdAt?: any;
     hasReply?: boolean;
 }
 
@@ -59,9 +60,9 @@ const Comment = () => {
         Message.success("删除评论成功!");
     }
 
-    const doCallback = (newItem: IComment) => {
+    const doCallback = () => {
         setVisible(false);
-        setData(data.map(item => item.id === newItem.id ? newItem : item));
+        setData(data.map(item => item.id === currentItem.id ? {...currentItem, hasReply: true} : item));
     }
     const doHidden = () => {
         setVisible(false);
@@ -79,18 +80,23 @@ const Comment = () => {
         {
             title: "姓名",
             dataIndex: 'stuName',
+            render: (value: string) => (
+                <span>{value ? value : "***"}</span>
+            )
         },
         {
             title: "内容",
             dataIndex: 'content',
+            width: 400,
             render: (value: string) => (
-                <span>{value?.length < 30 ? value : value?.substring(0, 30) + "..."}</span>
+                <span>{substrAndEllipsis(value, 23)}</span>
             ),
         },
         {
             title: "时间",
-            dataIndex: 'time',
-            render: (value) => value ? dayjs(value).format('YYYY-MM-DD HH:mm:ss') : '',
+            dataIndex: 'createdAt',
+            width: 200,
+            render: (value) => value ? formatDate(value).substring(0, 15) : '',
         },
         {
             title: "是否回复",
@@ -135,7 +141,7 @@ const Comment = () => {
                     border={true}
                 />
             </Card>
-            <CommentDetail visible={visible} data={currentItem} callback={doCallback} hidden={doHidden}/>
+            <CommentDetail visible={visible} data={currentItem?.id} callback={doCallback} hidden={doHidden}/>
         </>
     );
 }
