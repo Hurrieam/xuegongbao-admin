@@ -108,7 +108,7 @@ function CommentDetail({visible, data: id, callback, hidden}: IDetailModalProps)
                 </div>
             </Spin>
             <TextArea
-                placeholder='回复此评论'
+                placeholder='请输入回复内容'
                 style={{height: '100px'}}
                 value={replyContent}
                 onChange={(v) => setReplyContent(v)}

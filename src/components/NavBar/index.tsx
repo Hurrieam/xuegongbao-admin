@@ -7,13 +7,14 @@ import Logo from '@/assets/logo.svg';
 import IconButton from './IconButton';
 import storage from '@/utils/storage';
 import styles from './style/index.module.less';
+import {keys} from "@/constant/keys";
 
 function Navbar() {
     const theme = useSelector((state: GlobalState) => state.theme);
     const dispatch = useDispatch();
 
     const logout = () => {
-        storage.setItem('userStatus', 'logout');
+        storage.setItem(keys.USER_STATUS, 'logout');
         window.location.href = '/login';
     }
 
