@@ -129,7 +129,7 @@ const Feedback = () => {
                     border={true}
                 />
             </Card>
-            <FeedbackDetail visible={visible} id={currentId} callback={doCallback} hidden={doHidden}/>
+            <FeedbackDetail visible={visible} data={currentId} callback={doCallback} hidden={doHidden}/>
         </>
     );
 }

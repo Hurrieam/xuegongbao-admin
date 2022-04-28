@@ -48,3 +48,48 @@
     }
   }
 }
+
+.reply_wrapper {
+  margin-bottom: 15px;
+  border: 1px solid var(--color-border-2);
+
+  .comment_item,
+  .comment_item, .reply_item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+
+    .reply_time {
+      color: var(--color-text-3);
+      font-size: 13px;
+      min-width: 120px;
+      text-align: right;
+      align-self: end;
+    }
+  }
+
+  .comment_item {
+    padding: 15px;
+
+    &:nth-child(1) {
+      word-wrap: break-word;
+      word-break: break-all;
+    }
+
+    .comment_content {
+      font-weight: 600;
+    }
+  }
+
+  .reply_item {
+    padding: 5px 15px;
+    border-top: 1px dashed var(--color-border-2);
+
+    .reply_content {
+      span:nth-child(1) {
+        color: #666666;
+        //font-weight: 600;
+      }
+    }
+  }
+}

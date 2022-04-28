@@ -1,18 +1,21 @@
 import React, {useState, useEffect} from 'react';
-import {Table, Card, PaginationProps, Space, Button, Popconfirm, Badge} from '@arco-design/web-react';
+import {Table, Card, PaginationProps, Space, Button, Popconfirm, Badge, Message} from '@arco-design/web-react';
 import {IconDelete} from '@arco-design/web-react/icon';
 import LostAndFoundDetail from "@/pages/lostandfound/LostAndFoundDetail";
+import {deleteLAF, getLAFs} from "@/api/lostandfound";
+import {IResponse} from "@/types";
+import {substrAndEllipsis} from "@/utils/string";
 
-interface ILostAndFound {
+export interface ILostAndFound {
     id: number;
     openid?: string;
     itemName: string;
-    location: string;
-    lostTime: string;
+    location?: string;
+    lostTime?: string;
     description: string;
     images?: string;
     stuName?: string;
-    contact?: string;
+    contact: string;
     status?: boolean;
 }
 
@@ -20,7 +23,7 @@ function LostAndFound() {
     const [data, setData] = useState<ILostAndFound[]>([]);
     const [loading, setLoading] = useState<boolean>(true);
     const [visible, setVisible] = useState<boolean>(false);
-    const [currentId, setCurrentId] = useState<number>(0);
+    const [currentItem, setCurrentItem] = useState<ILostAndFound>(null);
     const [pagination, setPatination] = useState<PaginationProps>({
         sizeCanChange: true,
         showTotal: true,
@@ -33,32 +36,33 @@ function LostAndFound() {
         fetchData();
     }, []);
 
-    const fetchData = () => {
-        const data = [
-            {id: 1, itemName: '钢笔', location: '河南省郑州市', lostTime: '2020-01-01', description: '没有描述', status: false},
-            {id: 2, itemName: '钢笔', location: '河南省郑州市', lostTime: '2020-01-01', description: '没有描述', status: true},
-            {id: 3, itemName: '钢笔', location: '河南省郑州市', lostTime: '2020-01-01', description: '没有描述', status: false},
-            {id: 4, itemName: '钢笔', location: '河南省郑州市', lostTime: '2020-01-01', description: '没有描述', status: true},
-            {id: 5, itemName: '钢笔', location: '河南省郑州市', lostTime: '2020-01-01', description: '没有描述', status: false},
-            {id: 6, itemName: '钢笔', location: '河南省郑州市', lostTime: '2020-01-01', description: '没有描述', status: true},
-            {id: 7, itemName: '钢笔', location: '河南省郑州市', lostTime: '2020-01-01', description: '没有描述', status: false},
-        ];
-        setData(data);
+    const fetchData = async () => {
+        setLoading(true);
+        const {code, data}: IResponse = await getLAFs(pagination.current, pagination.pageSize);
+        if (code != 10000) {
+            Message.error("获取失物招领信息失败");
+            setLoading(false);
+            return;
+        }
+        console.log(data)
+        setData(data.items);
         setLoading(false);
     }
 
     const onView = (record: ILostAndFound) => {
-        setCurrentId(record.id);
+        setCurrentItem(record);
         setVisible(true);
     }
 
-    const onDelete = (record: ILostAndFound) => {
+    const onDelete = async (record: ILostAndFound) => {
         console.log(record);
-    }
-
-    const doCallback = (newItem: ILostAndFound) => {
-        setVisible(false);
-        setData(data.map(item => item.id === newItem.id ? newItem : item));
+        const {code}: IResponse = await deleteLAF(record.id);
+        if (code != 10000) {
+            Message.error("删除失物招领信息失败");
+            return;
+        }
+        setData(data.filter(item => item.id !== record.id));
+        Message.success("删除失物招领信息成功");
     }
 
     const doHidden = () => {
@@ -80,18 +84,25 @@ function LostAndFound() {
         },
         {
             title: "丢失地点",
-            dataIndex: 'location'
+            dataIndex: 'location',
+            render: (value: string) => (
+                <span>{value ? value : "未知"}</span>
+            )
         },
         {
             title: "描述",
             dataIndex: 'description',
+            width: 250,
             render: (value: string) => (
-                <span>{value?.length < 30 ? value : value?.substring(0, 30) + "..."}</span>
+                <span>{substrAndEllipsis(value, 25)}</span>
             ),
         },
         {
             title: "丢失时间",
-            dataIndex: 'lostTime'
+            dataIndex: 'lostTime',
+            render: (value: string) => (
+                <span>{value ? value : "未知"}</span>
+            )
         },
         {
             title: "状态",
@@ -137,7 +148,7 @@ function LostAndFound() {
                     border={true}
                 />
             </Card>
-            <LostAndFoundDetail visible={visible} id={currentId} callback={doCallback} hidden={doHidden}/>
+            <LostAndFoundDetail visible={visible} data={currentItem} hidden={doHidden}/>
         </>
     );
 }
