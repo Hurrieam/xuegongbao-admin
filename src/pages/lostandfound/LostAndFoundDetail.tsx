@@ -1,5 +1,5 @@
-import React, {useEffect, useMemo, useState} from 'react';
-import {Descriptions, Modal, Space, Tag, Image} from '@arco-design/web-react';
+import React, {useEffect, useMemo} from 'react';
+import {Descriptions, Image, Modal, Space, Tag} from '@arco-design/web-react';
 import {IDetailModalProps} from "@/types";
 import {ILostAndFound} from "@/pages/lostandfound/index";
 import {isValidString} from "@/utils/string";

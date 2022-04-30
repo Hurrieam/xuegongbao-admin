@@ -2,7 +2,6 @@ import React, {useEffect} from 'react';
 import {Modal} from '@arco-design/web-react';
 import {IDetailModalProps} from "@/types";
 
-
 function FeedbackDetail({visible, data, callback, hidden}: IDetailModalProps) {
     useEffect(() => {
         fetchData();
@@ -10,7 +9,7 @@ function FeedbackDetail({visible, data, callback, hidden}: IDetailModalProps) {
 
     // TODO: 根据id获取评论详情
     const fetchData = async () => {
-        console.log("fetch data");
+        return;
     };
 
     const doOk = () => {

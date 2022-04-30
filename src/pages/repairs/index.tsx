@@ -21,6 +21,7 @@ const Repairs: React.FC = () => {
     const [loading, setLoading] = useState<boolean>(true);
     const [visible, setVisible] = useState<boolean>(false);
     const [currentId, setCurrentId] = useState<number>(0);
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
     const [pagination, setPatination] = useState<PaginationProps>({
         sizeCanChange: true,
         showTotal: true,

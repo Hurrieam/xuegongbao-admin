@@ -1,6 +1,7 @@
 import axios from "axios";
 import {IResponse} from "@/types";
 import qs from "qs";
+import Message from "@arco-design/web-react/es/Message";
 
 const myAxios = axios.create({
     baseURL: process.env.REACT_APP_AXIOS_BASE_URL,
@@ -8,11 +9,12 @@ const myAxios = axios.create({
 });
 
 myAxios.interceptors.response.use(
-    (response) => {
+    response => {
         return response.data;
     },
-    (error) => {
-        return Promise.reject(error);
+    () => {
+        Message.error("网络错误");
+        return;
     }
 );
 

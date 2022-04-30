@@ -9,7 +9,7 @@ function RepairDetail({visible, data, callback, hidden}: IDetailModalProps) {
 
     // TODO: 根据id获取评论详情
     const fetchData = async () => {
-        console.log("fetch data");
+        return;
     };
 
     const doOk = () => {

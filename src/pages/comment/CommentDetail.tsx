@@ -14,7 +14,6 @@ function CommentDetail({visible, data: id, callback, hidden}: IDetailModalProps)
     const [loading, setLoading] = React.useState(false);
     const [comments, setComments] = useState<IComment[]>([]);
     useEffect(() => {
-        console.log(id)
         if (!id) return;
         fetchData(id);
     }, [id]);
