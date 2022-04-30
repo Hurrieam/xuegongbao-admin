@@ -25,6 +25,7 @@ export const getComments = async (start: number, limit: number): Promise<IRespon
 export const changeStatus = async (id: number): Promise<IResponse> => {
     return await post("/comment/status", {id: id});
 }
+
 /**
  * 删除留言
  * @param id

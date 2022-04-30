@@ -1,7 +1,7 @@
 import {post} from "@/api/_config";
 import {IResponse} from "@/types";
 import {ILoginForm} from "@/pages/login/form";
-import {encrypt} from "@/utils/encrypto";
+import {encrypt} from "@/utils/encryptor";
 
 /**
  * 管理员登录

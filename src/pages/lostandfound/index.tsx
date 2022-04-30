@@ -1,5 +1,5 @@
-import React, {useState, useEffect} from 'react';
-import {Table, Card, PaginationProps, Space, Button, Popconfirm, Badge, Message} from '@arco-design/web-react';
+import React, {useEffect, useState} from 'react';
+import {Badge, Button, Card, Message, PaginationProps, Popconfirm, Space, Table} from '@arco-design/web-react';
 import {IconDelete} from '@arco-design/web-react/icon';
 import LostAndFoundDetail from "@/pages/lostandfound/LostAndFoundDetail";
 import {deleteLAF, getLAFs} from "@/api/lostandfound";
@@ -24,28 +24,35 @@ function LostAndFound() {
     const [loading, setLoading] = useState<boolean>(true);
     const [visible, setVisible] = useState<boolean>(false);
     const [currentItem, setCurrentItem] = useState<ILostAndFound>(null);
-    const [pagination, setPatination] = useState<PaginationProps>({
-        sizeCanChange: true,
+    const [pagination, setPagination] = useState<PaginationProps>({
+        sizeCanChange: false,
         showTotal: true,
+        total: 0,
         pageSize: 10,
-        current: 1,
-        pageSizeChangeResetCurrent: true,
+        current: 1
     });
 
     useEffect(() => {
         fetchData();
-    }, []);
+    }, [pagination.current]);
 
     const fetchData = async () => {
         setLoading(true);
-        const {code, data}: IResponse = await getLAFs(pagination.current, pagination.pageSize);
+        const {code, data}: IResponse = await getLAFs(
+            (pagination.current - 1) * pagination.pageSize,
+            pagination.pageSize
+        );
         if (code != 10000) {
             Message.error("获取失物招领信息失败");
             setLoading(false);
             return;
         }
-        console.log(data)
-        setData(data.items);
+        const {items, total} = data;
+        setData(items);
+        setPagination({
+            ...pagination,
+            total
+        });
         setLoading(false);
     }
 
@@ -70,7 +77,7 @@ function LostAndFound() {
     }
 
     const onChangeTable = (pagination) => {
-        setPatination(pagination);
+        setPagination(pagination);
     }
 
     const columns = [
@@ -141,11 +148,12 @@ function LostAndFound() {
                 <Table
                     rowKey="id"
                     loading={loading}
-                    onChange={onChangeTable}
                     columns={columns}
                     data={data}
                     stripe={true}
                     border={true}
+                    pagination={pagination}
+                    onChange={onChangeTable}
                 />
             </Card>
             <LostAndFoundDetail visible={visible} data={currentItem} hidden={doHidden}/>

@@ -1,12 +1,6 @@
 import React from 'react';
-import {Link, Card, Divider, Message} from '@arco-design/web-react';
-import {
-    IconFile,
-    IconStorage,
-    IconSettings,
-    IconMobile,
-    IconFire,
-} from '@arco-design/web-react/icon';
+import {Card} from '@arco-design/web-react';
+import {IconFile, IconMobile, IconSettings, IconStorage,} from '@arco-design/web-react/icon';
 import styles from './style/shortcuts.module.less';
 
 interface IShortcuts {

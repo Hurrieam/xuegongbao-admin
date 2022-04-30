@@ -1,5 +1,5 @@
-import React, {useState, useEffect} from 'react';
-import {Table, Card, PaginationProps, Space, Button, Popconfirm, Badge, Message} from '@arco-design/web-react';
+import React, {useEffect, useState} from 'react';
+import {Badge, Button, Card, Message, PaginationProps, Popconfirm, Space, Table} from '@arco-design/web-react';
 import {IconDelete} from '@arco-design/web-react/icon';
 import CommentDetail from "@/pages/comment/CommentDetail";
 import {deleteComment, getComments} from "@/api/comment";
@@ -21,27 +21,38 @@ const Comment = () => {
     const [loading, setLoading] = useState<boolean>(true);
     const [visible, setVisible] = useState(false);
     const [currentItem, setCurrentItem] = useState<IComment>();
-    const [pagination, setPatination] = useState<PaginationProps>({
-        sizeCanChange: true,
+    const [pagination, setPagination] = useState<PaginationProps>({
+        sizeCanChange: false,
         showTotal: true,
+        total: 0,
         pageSize: 10,
-        current: 1,
-        pageSizeChangeResetCurrent: true,
+        current: 1
     });
 
     useEffect(() => {
         fetchData();
-    }, []);
+        return () => {
+            setData([]);
+        };
+    }, [pagination.current]);
 
     const fetchData = async () => {
-        setLoading(true);
-        const {code, data}: IResponse = await getComments(pagination.current, pagination.pageSize);
+        const {code, data}: IResponse = await getComments(
+            (pagination.current - 1) * pagination.pageSize,
+            pagination.pageSize
+        );
+
         if (code != 10000) {
             Message.error("获取评论失败");
             setLoading(false);
             return;
         }
-        setData(data.items);
+        const {items, total} = data;
+        setData(items);
+        setPagination({
+            ...pagination,
+            total
+        });
         setLoading(false);
     }
 
@@ -68,8 +79,8 @@ const Comment = () => {
         setVisible(false);
     }
 
-    const onChangeTable = (pagination) => {
-        setPatination(pagination);
+    const onChangeTable = async (pagination) => {
+        setPagination(pagination);
     }
 
     const columns = [
@@ -128,17 +139,19 @@ const Comment = () => {
             ),
         },
     ];
+
     return (
         <>
             <Card>
                 <Table
                     rowKey="id"
                     loading={loading}
-                    onChange={onChangeTable}
                     columns={columns}
                     data={data}
                     stripe={true}
                     border={true}
+                    pagination={pagination}
+                    onChange={onChangeTable}
                 />
             </Card>
             <CommentDetail visible={visible} data={currentItem?.id} callback={doCallback} hidden={doHidden}/>
