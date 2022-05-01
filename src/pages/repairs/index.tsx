@@ -1,9 +1,12 @@
-import React, {useState, useEffect} from 'react';
-import {Table, Card, PaginationProps, Space, Button, Popconfirm, Badge} from '@arco-design/web-react';
+import React, {useEffect, useState} from 'react';
+import {Badge, Button, Card, Message, PaginationProps, Popconfirm, Space, Table} from '@arco-design/web-react';
 import {IconDelete} from '@arco-design/web-react/icon';
 import RepairDetail from "@/pages/repairs/RepairDetail";
+import {IResponse} from "@/types";
+import {deleteRepairItemById, getRepairList} from "@/api/dorm-repair";
+import {formatDate} from "@/utils/date";
 
-interface IRepairs {
+export interface IRepairItem {
     id: number;
     openid: string;
     itemName: string;
@@ -13,142 +16,72 @@ interface IRepairs {
     stuName?: string;
     contact: string;
     time: string;
+    createdAt: string;
     status: boolean;
 }
 
 const Repairs: React.FC = () => {
-    const [data, setData] = useState<IRepairs[]>([]);
+    const [data, setData] = useState<IRepairItem[]>([]);
     const [loading, setLoading] = useState<boolean>(true);
     const [visible, setVisible] = useState<boolean>(false);
-    const [currentId, setCurrentId] = useState<number>(0);
-    // eslint-disable-next-line @typescript-eslint/no-unused-vars
-    const [pagination, setPatination] = useState<PaginationProps>({
-        sizeCanChange: true,
+    const [currentItem, setCurrentItem] = useState<IRepairItem>();
+    const [pagination, setPagination] = useState<PaginationProps>({
+        sizeCanChange: false,
         showTotal: true,
+        total: 0,
         pageSize: 10,
-        current: 1,
-        pageSizeChangeResetCurrent: true,
+        current: 1
     });
 
     useEffect(() => {
         fetchData();
-    }, []);
+    }, [pagination.current]);
 
-    const fetchData = () => {
-        const data = [
-            {
-                id: 1,
-                openid: '1',
-                itemName: '灯泡',
-                dorm: '1号楼',
-                room: '1-101',
-                contact: '12345678901',
-                status: true,
-                time: '2020-01-01'
-            },
-            {
-                id: 2,
-                openid: '2',
-                itemName: '电视',
-                dorm: '1号楼',
-                room: '1-101',
-                contact: '12345678901',
-                status: false,
-                time: '2020-01-01'
-            },
-            {
-                id: 3,
-                openid: '3',
-                itemName: '电脑',
-                dorm: '1号楼',
-                room: '1-101',
-                contact: '12345678901',
-                status: false,
-                time: '2020-01-01'
-            },
-            {
-                id: 4,
-                openid: '4',
-                itemName: '沙发',
-                dorm: '1号楼',
-                room: '1-101',
-                contact: '12345678901',
-                status: false,
-                time: '2020-01-01'
-            },
-            {
-                id: 5,
-                openid: '5',
-                itemName: '桌子',
-                dorm: '1号楼',
-                room: '1-101',
-                contact: '12345678901',
-                status: false,
-                time: '2020-01-01'
-            },
-            {
-                id: 6,
-                openid: '6',
-                itemName: '椅子',
-                dorm: '1号楼',
-                room: '1-101',
-                contact: '12345678901',
-                status: true,
-                time: '2020-01-01'
-            },
-            {
-                id: 7,
-                openid: '7',
-                itemName: '床',
-                dorm: '1号楼',
-                room: '1-101',
-                contact: '12345678901',
-                status: false,
-                time: '2020-01-01'
-            },
-            {
-                id: 8,
-                openid: '8',
-                itemName: '洗衣机',
-                dorm: '1号楼',
-                room: '1-101',
-                contact: '12345678901',
-                status: true,
-                time: '2020-01-01'
-            },
-            {
-                id: 9,
-                openid: '9',
-                itemName: '空调',
-                dorm: '1号楼',
-                room: '1-101',
-                contact: '12345678901',
-                status: false,
-                time: '2020-01-01'
-            },
-            {
-                id: 10,
-                openid: '10',
-                itemName: '电视',
-                dorm: '1号楼',
-                room: '1-101',
-                contact: '12345678901',
-                status: true,
-                time: '2020-01-01'
-            },
-            {
-                id: 11,
-                openid: '11',
-                itemName: '电视',
-                dorm: '1号楼',
-                room: '1-101',
-                contact: '12345678901',
-                status: true,
-                time: '2020-01-01'
-            }
-        ];
-        setData(data);
+    const fetchData = async () => {
+        setLoading(true);
+        const {code, data}: IResponse = await getRepairList(
+            (pagination.current - 1) * pagination.pageSize,
+            pagination.pageSize
+        );
+        if (code != 10000) {
+            Message.error("获取数据失败");
+            setLoading(false);
+            return;
+        }
+        const {items, total} = data;
+        setData(items);
+        setPagination({
+            ...pagination,
+            total
+        });
         setLoading(false);
+    }
+
+    const onView = (record: IRepairItem) => {
+        setCurrentItem(record);
+        setVisible(true);
+    }
+
+    const onDelete = async (record: IRepairItem) => {
+        const {code}: IResponse = await deleteRepairItemById(record.id);
+        if (code != 10000) {
+            Message.error("删除失败!");
+            return;
+        }
+        setData(data.filter(item => item.id !== record.id));
+        Message.success("删除成功!");
+    }
+
+    const doCallback = (newItem: IRepairItem) => {
+        setData(data.map(item => item.id === newItem.id ? newItem : item));
+    }
+
+    const doHidden = () => {
+        setVisible(false);
+    }
+
+    function onChangeTable(pagination) {
+        setPagination(pagination);
     }
 
     const columns = [
@@ -170,11 +103,13 @@ const Repairs: React.FC = () => {
         },
         {
             title: "时间",
-            dataIndex: 'time',
+            dataIndex: 'createdAt',
+            width: 200,
+            render: (value) => value ? formatDate(value) : '',
         },
         {
             title: "是否处理",
-            dataIndex: 'isHandled',
+            dataIndex: 'status',
             render: (value: boolean) => (
                 <>
                     {
@@ -187,7 +122,7 @@ const Repairs: React.FC = () => {
             title: "操作",
             dataIndex: 'operations',
             width: 200,
-            render: (_, record: IRepairs) => (
+            render: (_, record: IRepairItem) => (
                 <>
                     <Space>
                         <Button type="primary" size="small" onClick={() => onView(record)}>查看</Button>
@@ -203,41 +138,21 @@ const Repairs: React.FC = () => {
         },
     ];
 
-    const onView = (record: IRepairs) => {
-        setCurrentId(record.id);
-        setVisible(true);
-    }
-
-    const onDelete = (record: IRepairs) => {
-        console.log(record);
-    }
-
-    const doCallback = (newItem: IRepairs) => {
-        setVisible(false);
-        setData(data.map(item => item.id === newItem.id ? newItem : item));
-    }
-    const doHidden = () => {
-        setVisible(false);
-    }
-
-    function onChangeTable(pagination) {
-        setPatination(pagination);
-    }
-
     return (
         <>
             <Card>
                 <Table
                     rowKey="id"
                     loading={loading}
-                    onChange={onChangeTable}
                     columns={columns}
                     data={data}
                     stripe={true}
                     border={true}
+                    pagination={pagination}
+                    onChange={onChangeTable}
                 />
             </Card>
-            <RepairDetail visible={visible} data={currentId} callback={doCallback} hidden={doHidden}/>
+            <RepairDetail visible={visible} data={currentItem} callback={doCallback} hidden={doHidden}/>
         </>
     );
 }

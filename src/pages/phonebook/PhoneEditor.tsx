@@ -14,16 +14,16 @@ const PhoneBookDetail: React.FC<IDetailModalProps> = ({visible, callback, hidden
             Message.error('部门名称和电话号码不能为空');
             return;
         }
-        const {code}: IResponse = await addPhoneNumber({deptName, phone});
         try {
+            const {code}: IResponse = await addPhoneNumber({deptName, phone});
             if (code != 10000) {
-                Message.error("添加失败");
+                Message.error("添加失败!");
                 return;
             }
-            Message.success("添加成功");
+            Message.success("添加成功!");
             callback(null);
         } catch (e) {
-            Message.error("添加失败");
+            Message.error("网络错误!");
         } finally {
             hidden();
             clearReplyContent();

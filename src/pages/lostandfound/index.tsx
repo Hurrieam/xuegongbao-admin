@@ -62,14 +62,13 @@ function LostAndFound() {
     }
 
     const onDelete = async (record: ILostAndFound) => {
-        console.log(record);
         const {code}: IResponse = await deleteLAF(record.id);
         if (code != 10000) {
-            Message.error("删除失物招领信息失败");
+            Message.error("删除失败");
             return;
         }
         setData(data.filter(item => item.id !== record.id));
-        Message.success("删除失物招领信息成功");
+        Message.success("删除成功");
     }
 
     const doHidden = () => {

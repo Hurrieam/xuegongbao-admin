@@ -34,12 +34,12 @@ function getIconFromKey(key) {
   switch (key) {
     case 'dashboard/workplace':
       return <IconDashboard className={styles.icon} />;
-    case 'dashboard/comment':
-      return <IconMessage className={styles.icon} />;
-    case 'dashboard/feedback':
-      return <IconSubscribed className={styles.icon} />;
     case 'dashboard/phonebook':
       return <IconFile className={styles.icon} />;
+    case 'dashboard/comment':
+      return <IconMessage className={styles.icon} />;
+    case 'dashboard/reservation':
+      return <IconSubscribed className={styles.icon} />;
     case 'dashboard/repairs':
       return <IconTool className={styles.icon} />;
     case 'dashboard/lostandfound':

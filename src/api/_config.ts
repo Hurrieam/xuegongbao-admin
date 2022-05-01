@@ -14,6 +14,7 @@ myAxios.interceptors.response.use(
     },
     () => {
         Message.error("网络错误");
+        window.location.href = "/login";
         return;
     }
 );

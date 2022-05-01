@@ -87,7 +87,7 @@ function CommentDetail({visible, data: id, callback, hidden}: IDetailModalProps)
                                             <div className={styles.comment_item}>
                                                 <span className={styles.comment_content}>{item.content}</span>
                                                 <span
-                                                    className={styles.reply_time}>{formatDate(item.createdAt).substring(0, 15)}</span>
+                                                    className={styles.reply_time}>{formatDate(item.createdAt)}</span>
                                             </div>
                                         ) : (
                                             <div className={styles.reply_item}>
@@ -96,7 +96,7 @@ function CommentDetail({visible, data: id, callback, hidden}: IDetailModalProps)
                                                     <span>{item.content}</span>
                                                 </div>
                                                 <span
-                                                    className={styles.reply_time}>{formatDate(item.createdAt).substring(0, 15)}</span>
+                                                    className={styles.reply_time}>{formatDate(item.createdAt)}</span>
                                             </div>
                                         )
                                     }
