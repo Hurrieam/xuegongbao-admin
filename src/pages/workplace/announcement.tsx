@@ -6,7 +6,11 @@ function Announcement() {
     const [data, setData] = useState([]);
     const [loading, setLoading] = useState(true);
 
-    const fetchData = () => {
+    useEffect(() => {
+        fetchData();
+    }, []);
+
+    const fetchData = async () => {
         setLoading(true);
         // axios
         //     .get('/api/workplace/announcement')
@@ -18,10 +22,6 @@ function Announcement() {
         //     });
         setLoading(false);
     };
-
-    useEffect(() => {
-        fetchData();
-    }, []);
 
     function getTagColor(type) {
         switch (type) {

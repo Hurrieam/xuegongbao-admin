@@ -1,11 +1,12 @@
 import React, {ReactNode, useEffect, useState} from 'react';
-import {Divider, Grid, Skeleton, Typography} from '@arco-design/web-react';
+import {Divider, Grid, Message, Skeleton, Typography} from '@arco-design/web-react';
 import OverviewAreaLine from '@/components/Chart/overview-area-line';
 import styles from './style/overview.module.less';
 import IconCalendar from './assets/calendar.svg';
 import IconComments from './assets/comments.svg';
 import IconContent from './assets/content.svg';
 import IconIncrease from './assets/increase.svg';
+import {getDayUsage, getMonthUsage} from "@/api/usage";
 
 const {Row, Col} = Grid;
 
@@ -36,10 +37,10 @@ const StatisticItem: React.FC<StatisticItemType> = (props: StatisticItemType) =>
 }
 
 type DataType = {
-    todayUsers: number;
-    todayComments: number;
-    todayRepairs: number;
-    todayReservations: number;
+    dayUsers: number;
+    dayComments: number;
+    dayRepairs: number;
+    dayReservations: number;
 };
 type IChartData = {
     date: string;
@@ -47,7 +48,12 @@ type IChartData = {
 }
 
 function Overview() {
-    const [data, setData] = useState<DataType>(null);
+    const [data, setData] = useState<DataType>({
+        dayUsers: 0,
+        dayComments: 0,
+        dayRepairs: 0,
+        dayReservations: 0,
+    });
     const [loading, setLoading] = useState<boolean>(true);
     const [chartData, setChartData] = useState<IChartData[]>([]);
 
@@ -55,28 +61,32 @@ function Overview() {
         fetchData();
     }, []);
 
-    const fetchData = () => {
+    const fetchData = async () => {
         setLoading(true);
-        // TODO: 获取数据
-        const data = {
-            todayUsers: Math.floor(Math.random() * 100),
-            todayComments: Math.floor(Math.random() * 100),
-            todayRepairs: Math.floor(Math.random() * 100),
-            todayReservations: Math.floor(Math.random() * 100),
-        };
-        const t = new Array(30).fill(0).map((_, index) => {
-            const date = new Date();
-            date.setDate(index);
+        const {code: code1, data: data1} = await getDayUsage();
+        if (code1 !== 10000) {
+            Message.error("获取数据失败!");
+            return;
+        }
+        setData(data1);
+        const {code: code2, data: data2} = await getMonthUsage();
+        if (code2 !== 10000) {
+            Message.error("获取数据失败!");
+            return;
+        }
+        const array = data2.map((item: any) => {
             return {
-                date: date.getMonth() + "月" + date.getDate() + '日',
-                count: 88 + Math.floor(Math.random() * 100),
+                date: formatDate(item.createdAt),
+                count: item.users,
             }
         });
-        setData(data);
-        setChartData(t);
+        setChartData(array);
         setLoading(false);
     };
-
+    const formatDate = (myDate: string) => {
+        const date = new Date(myDate);
+        return date.getFullYear() + '-' + (date.getMonth() + 1) + '-' + date.getDate();
+    }
     return (
         <div className={styles.container}>
             <Typography.Title heading={5} style={{marginTop: 0}}>
@@ -88,7 +98,7 @@ function Overview() {
                     <StatisticItem
                         icon={<IconCalendar/>}
                         title="今日使用人数"
-                        count={data?.todayUsers || '--'}
+                        count={data.dayUsers}
                         loading={loading}
                         unit="个"
                     />
@@ -98,7 +108,7 @@ function Overview() {
                     <StatisticItem
                         icon={<IconComments/>}
                         title="今日留言数"
-                        count={data?.todayComments || '--'}
+                        count={data.dayComments}
                         loading={loading}
                         unit="条"
                     />
@@ -108,7 +118,7 @@ function Overview() {
                     <StatisticItem
                         icon={<IconContent/>}
                         title="今日报修单数"
-                        count={data?.todayRepairs || '--'}
+                        count={data.dayRepairs}
                         loading={loading}
                         unit="单"
                     />
@@ -118,7 +128,7 @@ function Overview() {
                     <StatisticItem
                         icon={<IconIncrease/>}
                         title="今日预约数"
-                        count={data?.todayReservations || '--'}
+                        count={data.dayReservations}
                         loading={loading}
                         unit="个"
                     />
