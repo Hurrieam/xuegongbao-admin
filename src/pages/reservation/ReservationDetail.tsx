@@ -1,10 +1,8 @@
 import React, {useEffect, useState} from 'react';
 import {Descriptions, Message, Modal, Tag} from '@arco-design/web-react';
-import {IDetailModalProps} from "@/types";
 import {updateReservationStatusById} from "@/api/reservation";
-import {IReservation} from "@/pages/reservation/index";
 
-const ReservationDetail: React.FC<IDetailModalProps> = ({visible, data, callback, hidden}: IDetailModalProps) => {
+const ReservationDetail: React.FC<API.DetailModalProps> = ({visible, data, callback, hidden}: API.DetailModalProps) => {
     const [state, setState] = useState<boolean>(false);
     useEffect(() => {
         if (!data) return;
@@ -31,7 +29,7 @@ const ReservationDetail: React.FC<IDetailModalProps> = ({visible, data, callback
         hidden();
     }
 
-    const getRows = (data: IReservation) => {
+    const getRows = (data: API.Reservation) => {
         if (!data) return [];
         return [{
             label: '咨询类型',

@@ -1,10 +1,8 @@
 import React, {useEffect, useMemo} from 'react';
 import {Descriptions, Image, Modal, Space, Tag} from '@arco-design/web-react';
-import {IDetailModalProps} from "@/types";
-import {ILostAndFound} from "@/pages/lostandfound/index";
 import {isValidString} from "@/utils/string";
 
-const LostAndFoundDetail: React.FC<IDetailModalProps> = ({visible, data, hidden}: IDetailModalProps) => {
+const LostAndFoundDetail: React.FC<API.DetailModalProps> = ({visible, data, hidden}: API.DetailModalProps) => {
     useEffect(() => {
         if (!data) return;
     }, [data]);
@@ -33,7 +31,7 @@ const LostAndFoundDetail: React.FC<IDetailModalProps> = ({visible, data, hidden}
         }, [data]
     );
 
-    const getRows = (data: ILostAndFound) => {
+    const getRows = (data: API.LostAndFound) => {
         if (!data) return [];
         return [{
             label: '物品名称',

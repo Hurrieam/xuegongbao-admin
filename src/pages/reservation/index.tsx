@@ -1,27 +1,15 @@
 import React, {useEffect, useState} from 'react';
 import {Badge, Button, Card, Message, PaginationProps, Popconfirm, Space, Table} from '@arco-design/web-react';
 import {IconDelete} from '@arco-design/web-react/icon';
-import {IResponse} from "@/types";
 import {substrAndEllipsis} from "@/utils/string";
 import {deleteReservationById, getReservationList} from "@/api/reservation";
 import ReservationDetail from './ReservationDetail';
 
-export interface IReservation {
-    id: number;
-    type: string;
-    stuName: string;
-    sdept: string;
-    content: string;
-    time: string;
-    contact: string;
-    status: boolean;
-}
-
-function Reservation() {
-    const [data, setData] = useState<IReservation[]>([]);
+const Reservation: React.FC = () => {
+    const [data, setData] = useState<API.Reservation[]>([]);
     const [loading, setLoading] = useState<boolean>(true);
     const [visible, setVisible] = useState<boolean>(false);
-    const [currentItem, setCurrentItem] = useState<IReservation>(null);
+    const [currentItem, setCurrentItem] = useState<API.Reservation>(null);
     const [pagination, setPagination] = useState<PaginationProps>({
         sizeCanChange: false,
         showTotal: true,
@@ -36,7 +24,7 @@ function Reservation() {
 
     const fetchData = async () => {
         setLoading(true);
-        const {code, data}: IResponse = await getReservationList(
+        const {code, data}: API.Response = await getReservationList(
             (pagination.current - 1) * pagination.pageSize,
             pagination.pageSize
         );
@@ -54,13 +42,13 @@ function Reservation() {
         setLoading(false);
     }
 
-    const onView = (record: IReservation) => {
+    const onView = (record: API.Reservation) => {
         setCurrentItem(record);
         setVisible(true);
     }
 
-    const onDelete = async (record: IReservation) => {
-        const {code}: IResponse = await deleteReservationById(record.id);
+    const onDelete = async (record: API.Reservation) => {
+        const {code}: API.Response = await deleteReservationById(record.id);
         if (code != 10000) {
             Message.error("删除失败");
             return;
@@ -69,7 +57,7 @@ function Reservation() {
         Message.success("删除成功");
     }
 
-    const doCallback = (newItem: IReservation) => {
+    const doCallback = (newItem: API.Reservation) => {
         setData(data.map(item => item.id === newItem.id ? newItem : item));
     }
 
@@ -118,7 +106,7 @@ function Reservation() {
             title: "操作",
             dataIndex: 'operations',
             width: 200,
-            render: (_, record: IReservation) => (
+            render: (_, record: API.Reservation) => (
                 <>
                     <Space>
                         <Button type="primary" size="small" onClick={() => onView(record)}>查看</Button>

@@ -1,11 +1,11 @@
 import React from 'react';
 import {Form, Input, Message, Modal} from '@arco-design/web-react';
-import {IDetailModalProps, IResponse} from "@/types";
 import {isValidString} from "@/utils/string";
 import {addPhoneNumber} from "@/api/phonebook";
 
 const FormItem = Form.Item;
-const PhoneBookDetail: React.FC<IDetailModalProps> = ({visible, callback, hidden}: IDetailModalProps) => {
+
+const PhoneBookDetail: React.FC<API.DetailModalProps> = ({visible, callback, hidden}: API.DetailModalProps) => {
     const [form] = Form.useForm();
     const doOk = async () => {
         const deptName = form.getFieldValue("deptName");
@@ -15,7 +15,7 @@ const PhoneBookDetail: React.FC<IDetailModalProps> = ({visible, callback, hidden
             return;
         }
         try {
-            const {code}: IResponse = await addPhoneNumber({deptName, phone});
+            const {code}: API.Response = await addPhoneNumber({deptName, phone});
             if (code != 10000) {
                 Message.error("添加失败!");
                 return;

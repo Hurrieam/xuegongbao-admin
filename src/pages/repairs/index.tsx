@@ -2,29 +2,16 @@ import React, {useEffect, useState} from 'react';
 import {Badge, Button, Card, Message, PaginationProps, Popconfirm, Space, Table} from '@arco-design/web-react';
 import {IconDelete} from '@arco-design/web-react/icon';
 import RepairDetail from "@/pages/repairs/RepairDetail";
-import {IResponse} from "@/types";
 import {deleteRepairItemById, getRepairList} from "@/api/dorm-repair";
 import {formatDate} from "@/utils/date";
 
-export interface IRepairItem {
-    id: number;
-    openid: string;
-    itemName: string;
-    description?: string;
-    dorm: string;
-    room: string;
-    stuName?: string;
-    contact: string;
-    time: string;
-    createdAt: string;
-    status: boolean;
-}
+
 
 const Repairs: React.FC = () => {
-    const [data, setData] = useState<IRepairItem[]>([]);
+    const [data, setData] = useState<API.RepairItem[]>([]);
     const [loading, setLoading] = useState<boolean>(true);
     const [visible, setVisible] = useState<boolean>(false);
-    const [currentItem, setCurrentItem] = useState<IRepairItem>();
+    const [currentItem, setCurrentItem] = useState<API.RepairItem>();
     const [pagination, setPagination] = useState<PaginationProps>({
         sizeCanChange: false,
         showTotal: true,
@@ -39,7 +26,7 @@ const Repairs: React.FC = () => {
 
     const fetchData = async () => {
         setLoading(true);
-        const {code, data}: IResponse = await getRepairList(
+        const {code, data}: API.Response = await getRepairList(
             (pagination.current - 1) * pagination.pageSize,
             pagination.pageSize
         );
@@ -57,13 +44,13 @@ const Repairs: React.FC = () => {
         setLoading(false);
     }
 
-    const onView = (record: IRepairItem) => {
+    const onView = (record: API.RepairItem) => {
         setCurrentItem(record);
         setVisible(true);
     }
 
-    const onDelete = async (record: IRepairItem) => {
-        const {code}: IResponse = await deleteRepairItemById(record.id);
+    const onDelete = async (record: API.RepairItem) => {
+        const {code}: API.Response = await deleteRepairItemById(record.id);
         if (code != 10000) {
             Message.error("删除失败!");
             return;
@@ -72,7 +59,7 @@ const Repairs: React.FC = () => {
         Message.success("删除成功!");
     }
 
-    const doCallback = (newItem: IRepairItem) => {
+    const doCallback = (newItem: API.RepairItem) => {
         setData(data.map(item => item.id === newItem.id ? newItem : item));
     }
 
@@ -122,7 +109,7 @@ const Repairs: React.FC = () => {
             title: "操作",
             dataIndex: 'operations',
             width: 200,
-            render: (_, record: IRepairItem) => (
+            render: (_, record: API.RepairItem) => (
                 <>
                     <Space>
                         <Button type="primary" size="small" onClick={() => onView(record)}>查看</Button>

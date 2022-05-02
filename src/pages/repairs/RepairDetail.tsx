@@ -1,11 +1,9 @@
 import React, {useEffect, useState} from 'react';
 import {Descriptions, Message, Modal, Tag} from '@arco-design/web-react';
-import {IDetailModalProps} from "@/types";
-import {IRepairItem} from "@/pages/repairs/index";
 import {updateRepairItemStatusById} from "@/api/dorm-repair";
 import {formatDate} from "@/utils/date";
 
-const RepairDetail: React.FC<IDetailModalProps> = ({visible, data, callback, hidden}: IDetailModalProps) => {
+const RepairDetail: React.FC<API.DetailModalProps> = ({visible, data, callback, hidden}: API.DetailModalProps) => {
     const [state, setState] = useState<boolean>(false);
     useEffect(() => {
         if (!data) return;
@@ -32,7 +30,7 @@ const RepairDetail: React.FC<IDetailModalProps> = ({visible, data, callback, hid
         hidden();
     }
 
-    const getRows = (data: IRepairItem) => {
+    const getRows = (data: API.RepairItem) => {
         if (!data) return [];
         return [{
             label: '报修内容',

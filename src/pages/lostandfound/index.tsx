@@ -3,27 +3,13 @@ import {Badge, Button, Card, Message, PaginationProps, Popconfirm, Space, Table}
 import {IconDelete} from '@arco-design/web-react/icon';
 import LostAndFoundDetail from "@/pages/lostandfound/LostAndFoundDetail";
 import {deleteLAF, getLAFs} from "@/api/lostandfound";
-import {IResponse} from "@/types";
 import {substrAndEllipsis} from "@/utils/string";
 
-export interface ILostAndFound {
-    id: number;
-    openid?: string;
-    itemName: string;
-    location?: string;
-    lostTime?: string;
-    description: string;
-    images?: string;
-    stuName?: string;
-    contact: string;
-    status?: boolean;
-}
-
 function LostAndFound() {
-    const [data, setData] = useState<ILostAndFound[]>([]);
+    const [data, setData] = useState<API.LostAndFound[]>([]);
     const [loading, setLoading] = useState<boolean>(true);
     const [visible, setVisible] = useState<boolean>(false);
-    const [currentItem, setCurrentItem] = useState<ILostAndFound>(null);
+    const [currentItem, setCurrentItem] = useState<API.LostAndFound>(null);
     const [pagination, setPagination] = useState<PaginationProps>({
         sizeCanChange: false,
         showTotal: true,
@@ -38,7 +24,7 @@ function LostAndFound() {
 
     const fetchData = async () => {
         setLoading(true);
-        const {code, data}: IResponse = await getLAFs(
+        const {code, data}: API.Response = await getLAFs(
             (pagination.current - 1) * pagination.pageSize,
             pagination.pageSize
         );
@@ -56,13 +42,13 @@ function LostAndFound() {
         setLoading(false);
     }
 
-    const onView = (record: ILostAndFound) => {
+    const onView = (record: API.LostAndFound) => {
         setCurrentItem(record);
         setVisible(true);
     }
 
-    const onDelete = async (record: ILostAndFound) => {
-        const {code}: IResponse = await deleteLAF(record.id);
+    const onDelete = async (record: API.LostAndFound) => {
+        const {code}: API.Response = await deleteLAF(record.id);
         if (code != 10000) {
             Message.error("删除失败");
             return;
@@ -125,7 +111,7 @@ function LostAndFound() {
             title: "操作",
             dataIndex: 'operations',
             width: 200,
-            render: (_, record: ILostAndFound) => (
+            render: (_, record: API.LostAndFound) => (
                 <>
                     <Space>
                         <Button type="primary" size="small" onClick={() => onView(record)}>查看</Button>

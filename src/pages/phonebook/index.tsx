@@ -2,17 +2,10 @@ import React, {useEffect, useState} from 'react';
 import {Button, Card, Message, PaginationProps, Popconfirm, Table} from '@arco-design/web-react';
 import {IconDelete, IconPlus} from '@arco-design/web-react/icon';
 import PhoneEditor from "@/pages/phonebook/PhoneEditor";
-import {IResponse} from "@/types";
 import {deletePhoneNumber, getPhoneBook} from "@/api/phonebook";
 
-export interface IPhoneBook {
-    id?: number;
-    deptName: string;
-    phone: string;
-}
-
 const PhoneBook: React.FC = () => {
-    const [data, setData] = useState<IPhoneBook[]>([]);
+    const [data, setData] = useState<API.PhoneBook[]>([]);
     const [loading, setLoading] = useState<boolean>(true);
     const [visible, setVisible] = useState<boolean>(false);
     const [pagination, setPagination] = useState<PaginationProps>({
@@ -29,7 +22,7 @@ const PhoneBook: React.FC = () => {
 
     const fetchData = async () => {
         setLoading(true);
-        const {code, data}: IResponse = await getPhoneBook(
+        const {code, data}: API.Response = await getPhoneBook(
             (pagination.current - 1) * pagination.pageSize,
             pagination.pageSize
         );
@@ -59,8 +52,8 @@ const PhoneBook: React.FC = () => {
         setVisible(true);
     }
 
-    const onDelete = async (record: IPhoneBook) => {
-        const {code}: IResponse = await deletePhoneNumber(record.id);
+    const onDelete = async (record: API.PhoneBook) => {
+        const {code}: API.Response = await deletePhoneNumber(record.id);
         if (code != 10000) {
             Message.error("删除失败");
             return;
@@ -90,7 +83,7 @@ const PhoneBook: React.FC = () => {
             title: "操作",
             dataIndex: 'operations',
             width: 200,
-            render: (_, record: IPhoneBook) => (
+            render: (_, record: API.PhoneBook) => (
                 <Popconfirm
                     title='确定删除吗?'
                     onOk={() => onDelete(record)}

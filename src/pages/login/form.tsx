@@ -5,16 +5,12 @@ import {defaultRoute} from '@/routes';
 import React, {useEffect, useRef, useState} from 'react';
 import styles from './style/index.module.less';
 import {login} from "@/api/login";
-import {IResponse} from "@/types";
 import {StatusCode} from "@/constant/status";
 import {aesDecrypt, aesEncrypt} from "@/utils/encryptor";
 import {keys} from "@/constant/keys";
 
-export interface ILoginForm {
-    username: string;
-    password: string;
-}
-const {REMEMBER_ME,USER_STATUS} = keys;
+
+const {REMEMBER_ME, USER_STATUS} = keys;
 
 export default function LoginForm() {
     const formRef = useRef<FormInstance>();
@@ -28,10 +24,10 @@ export default function LoginForm() {
         const rememberPassword = !!params;
         setRememberPassword(rememberPassword);
         if (formRef.current && rememberPassword) {
-            try{
+            try {
                 const parseParams = JSON.parse(aesDecrypt(params));
                 formRef.current.setFieldsValue(parseParams);
-            }catch (e) {
+            } catch (e) {
                 formRef.current.setFieldsValue({
                     username: '',
                     password: ''
@@ -53,10 +49,10 @@ export default function LoginForm() {
         window.location.href = defaultRoute;
     }
 
-    const doLogin = async (params: ILoginForm) => {
+    const doLogin = async (params: API.LoginForm) => {
         setErrorMessage('');
         setLoading(true);
-        const res: IResponse = await login(params)
+        const res: API.Response = await login(params)
         if (!res) {
             setLoading(false);
             return;
@@ -79,7 +75,7 @@ export default function LoginForm() {
     }
 
     const onSubmitClick = async () => {
-        const params: ILoginForm = await formRef.current.validate();
+        const params: API.LoginForm = await formRef.current.validate();
         await doLogin({
             username: params.username,
             password: params.password

@@ -3,24 +3,14 @@ import {Badge, Button, Card, Message, PaginationProps, Popconfirm, Space, Table}
 import {IconDelete} from '@arco-design/web-react/icon';
 import CommentDetail from "@/pages/comment/CommentDetail";
 import {deleteComment, getComments} from "@/api/comment";
-import {IResponse} from "@/types";
 import {formatDate} from "@/utils/date";
 import {substrAndEllipsis} from "@/utils/string";
 
-export interface IComment {
-    id?: number;
-    openid?: string;
-    parentId?: string;
-    content: string;
-    createdAt?: any;
-    hasReply?: boolean;
-}
-
 const Comment = () => {
-    const [data, setData] = useState<IComment[]>([]);
+    const [data, setData] = useState<API.Comment[]>([]);
     const [loading, setLoading] = useState<boolean>(true);
     const [visible, setVisible] = useState(false);
-    const [currentItem, setCurrentItem] = useState<IComment>();
+    const [currentItem, setCurrentItem] = useState<API.Comment>();
     const [pagination, setPagination] = useState<PaginationProps>({
         sizeCanChange: false,
         showTotal: true,
@@ -37,7 +27,7 @@ const Comment = () => {
     }, [pagination.current]);
 
     const fetchData = async () => {
-        const {code, data}: IResponse = await getComments(
+        const {code, data}: API.Response = await getComments(
             (pagination.current - 1) * pagination.pageSize,
             pagination.pageSize
         );
@@ -56,13 +46,13 @@ const Comment = () => {
         setLoading(false);
     }
 
-    const onView = (record: IComment) => {
+    const onView = (record: API.Comment) => {
         setCurrentItem(record);
         setVisible(true);
     }
 
-    const onDelete = async (record: IComment) => {
-        const {code}: IResponse = await deleteComment(record.id);
+    const onDelete = async (record: API.Comment) => {
+        const {code}: API.Response = await deleteComment(record.id);
         if (code != 10000) {
             Message.error("删除评论失败!");
             return;
@@ -124,7 +114,7 @@ const Comment = () => {
             title: "操作",
             dataIndex: 'operations',
             width: 200,
-            render: (_, record: IComment) => (
+            render: (_, record: API.Comment) => (
                 <>
                     <Space>
                         <Button type="primary" size="small" onClick={() => onView(record)}>回复</Button>

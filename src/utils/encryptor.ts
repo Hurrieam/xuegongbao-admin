@@ -5,7 +5,6 @@ const MD5_SALT_VALUE = process.env.REACT_APP_MD5_SALT_VALUE;
 const SECURITY_KEY = process.env.REACT_APP_SECURITY_KEY;
 
 export const encrypt = (str: string) => {
-    console.log(MD5_SALT_VALUE)
     return md5(md5(str + MD5_SALT_VALUE));
 };
 

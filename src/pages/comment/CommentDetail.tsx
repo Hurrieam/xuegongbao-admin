@@ -1,18 +1,16 @@
 import React, {Fragment, useEffect, useState} from 'react';
-import {Modal, Input, Message, Spin} from '@arco-design/web-react';
-import {IDetailModalProps, IResponse} from "@/types";
+import {Input, Message, Modal, Spin} from '@arco-design/web-react';
 import {addComment, changeStatus, getCommentDetails} from "@/api/comment";
-import {IComment} from "@/pages/comment/index";
 import styles from "./style/index.module.less";
 import {formatDate} from "@/utils/date";
 
 const TextArea = Input.TextArea;
 const ADMIN_OPENID = "00000000";
 
-function CommentDetail({visible, data: id, callback, hidden}: IDetailModalProps) {
+function CommentDetail({visible, data: id, callback, hidden}: API.DetailModalProps) {
     const [replyContent, setReplyContent] = useState('');
     const [loading, setLoading] = React.useState(false);
-    const [comments, setComments] = useState<IComment[]>([]);
+    const [comments, setComments] = useState<API.Comment[]>([]);
     useEffect(() => {
         if (!id) return;
         fetchData(id);
@@ -36,13 +34,13 @@ function CommentDetail({visible, data: id, callback, hidden}: IDetailModalProps)
             Message.error("请输入回复内容");
             return;
         }
-        const reply: IComment = {
+        const reply: API.Comment = {
             openid: ADMIN_OPENID,
             content: replyContent,
             parentId: id
         };
         try {
-            const {code}: IResponse = await addComment(reply);
+            const {code}: API.Response = await addComment(reply);
             if (code != 10000) {
                 Message.error(`回复留言失败，错误码：${code}`);
                 return;
