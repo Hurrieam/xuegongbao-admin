@@ -7,6 +7,7 @@
     "start": "react-app-rewired start",
     "dev": "react-app-rewired start",
     "build": "react-app-rewired build",
+    "webify-build": "CI=false && react-app-rewired build",
     "eslint": "eslint src/ --ext .ts,.tsx --fix --cache",
     "stylelint": "stylelint 'src/**/*.less' 'src/**/*.css' --fix --cache",
     "lint": "npm run eslint && npm run stylelint"
