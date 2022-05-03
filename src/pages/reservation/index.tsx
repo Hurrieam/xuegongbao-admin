@@ -4,6 +4,7 @@ import {IconDelete} from '@arco-design/web-react/icon';
 import {substrAndEllipsis} from "@/utils/string";
 import {deleteReservationById, getReservationList} from "@/api/reservation";
 import ReservationDetail from './ReservationDetail';
+import {StatusCode, StatusMessage} from "@/constant/status";
 
 const Reservation: React.FC = () => {
     const [data, setData] = useState<API.Reservation[]>([]);
@@ -28,8 +29,8 @@ const Reservation: React.FC = () => {
             (pagination.current - 1) * pagination.pageSize,
             pagination.pageSize
         );
-        if (code != 10000) {
-            Message.error("获取数据失败!");
+        if (code != StatusCode.OK) {
+            Message.error(StatusMessage.FETCH_DATA_ERROR);
             setLoading(false);
             return;
         }
@@ -49,12 +50,12 @@ const Reservation: React.FC = () => {
 
     const onDelete = async (record: API.Reservation) => {
         const {code}: API.Response = await deleteReservationById(record.id);
-        if (code != 10000) {
-            Message.error("删除失败");
+        if (code != StatusCode.OK) {
+            Message.error(StatusMessage.DELETE_FAILED);
             return;
         }
         setData(data.filter(item => item.id !== record.id));
-        Message.success("删除成功");
+        Message.success(StatusMessage.DELETE_OK);
     }
 
     const doCallback = (newItem: API.Reservation) => {

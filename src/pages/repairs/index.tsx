@@ -4,6 +4,7 @@ import {IconDelete} from '@arco-design/web-react/icon';
 import RepairDetail from "@/pages/repairs/RepairDetail";
 import {deleteRepairItemById, getRepairList} from "@/api/dorm-repair";
 import {formatDate} from "@/utils/date";
+import {StatusCode, StatusMessage} from "@/constant/status";
 
 
 
@@ -30,8 +31,8 @@ const Repairs: React.FC = () => {
             (pagination.current - 1) * pagination.pageSize,
             pagination.pageSize
         );
-        if (code != 10000) {
-            Message.error("获取数据失败");
+        if (code != StatusCode.OK) {
+            Message.error(StatusMessage.FETCH_DATA_ERROR);
             setLoading(false);
             return;
         }
@@ -51,12 +52,12 @@ const Repairs: React.FC = () => {
 
     const onDelete = async (record: API.RepairItem) => {
         const {code}: API.Response = await deleteRepairItemById(record.id);
-        if (code != 10000) {
-            Message.error("删除失败!");
+        if (code != StatusCode.OK) {
+            Message.error(StatusMessage.DELETE_FAILED);
             return;
         }
         setData(data.filter(item => item.id !== record.id));
-        Message.success("删除成功!");
+        Message.success(StatusMessage.DELETE_OK);
     }
 
     const doCallback = (newItem: API.RepairItem) => {

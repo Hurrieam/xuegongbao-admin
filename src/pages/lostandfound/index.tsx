@@ -2,8 +2,9 @@ import React, {useEffect, useState} from 'react';
 import {Badge, Button, Card, Message, PaginationProps, Popconfirm, Space, Table} from '@arco-design/web-react';
 import {IconDelete} from '@arco-design/web-react/icon';
 import LostAndFoundDetail from "@/pages/lostandfound/LostAndFoundDetail";
-import {deleteLAF, getLAFs} from "@/api/lostandfound";
 import {substrAndEllipsis} from "@/utils/string";
+import {deleteLAFById, getLAFList} from "@/api/lostandfound";
+import {StatusCode, StatusMessage} from "@/constant/status";
 
 function LostAndFound() {
     const [data, setData] = useState<API.LostAndFound[]>([]);
@@ -24,12 +25,12 @@ function LostAndFound() {
 
     const fetchData = async () => {
         setLoading(true);
-        const {code, data}: API.Response = await getLAFs(
+        const {code, data}: API.Response = await getLAFList(
             (pagination.current - 1) * pagination.pageSize,
             pagination.pageSize
         );
-        if (code != 10000) {
-            Message.error("获取失物招领信息失败");
+        if (code != StatusCode.OK) {
+            Message.error(StatusMessage.FETCH_DATA_ERROR);
             setLoading(false);
             return;
         }
@@ -48,13 +49,13 @@ function LostAndFound() {
     }
 
     const onDelete = async (record: API.LostAndFound) => {
-        const {code}: API.Response = await deleteLAF(record.id);
-        if (code != 10000) {
-            Message.error("删除失败");
+        const {code}: API.Response = await deleteLAFById(record.id);
+        if (code != StatusCode.OK) {
+            Message.error(StatusMessage.DELETE_FAILED);
             return;
         }
         setData(data.filter(item => item.id !== record.id));
-        Message.success("删除成功");
+        Message.success(StatusMessage.DELETE_OK);
     }
 
     const doHidden = () => {

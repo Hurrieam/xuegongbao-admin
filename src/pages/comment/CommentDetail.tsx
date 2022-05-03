@@ -1,14 +1,15 @@
 import React, {Fragment, useEffect, useState} from 'react';
 import {Input, Message, Modal, Spin} from '@arco-design/web-react';
-import {addComment, changeStatus, getCommentDetails} from "@/api/comment";
 import styles from "./style/index.module.less";
 import {formatDate} from "@/utils/date";
+import {addComment, getCommentDetailsById, updateCommentStatusById} from "@/api/comment";
+import {StatusCode, StatusMessage} from "@/constant/status";
 
 const TextArea = Input.TextArea;
 const ADMIN_OPENID = "00000000";
 
 function CommentDetail({visible, data: id, callback, hidden}: API.DetailModalProps) {
-    const [replyContent, setReplyContent] = useState('');
+    const [replyContent, setReplyContent] = useState<string>('');
     const [loading, setLoading] = React.useState(false);
     const [comments, setComments] = useState<API.Comment[]>([]);
     useEffect(() => {
@@ -18,9 +19,9 @@ function CommentDetail({visible, data: id, callback, hidden}: API.DetailModalPro
 
     const fetchData = async (id: number) => {
         setLoading(true);
-        const {code, data} = await getCommentDetails(id);
-        if (code != 10000) {
-            Message.error("获取留言详情失败!");
+        const {code, data} = await getCommentDetailsById(id);
+        if (code != StatusCode.OK) {
+            Message.error(StatusMessage.FETCH_DATA_ERROR);
             return;
         }
         setComments(data.items);
@@ -41,11 +42,11 @@ function CommentDetail({visible, data: id, callback, hidden}: API.DetailModalPro
         };
         try {
             const {code}: API.Response = await addComment(reply);
-            if (code != 10000) {
+            if (code != StatusCode.OK) {
                 Message.error(`回复留言失败，错误码：${code}`);
                 return;
             }
-            await changeStatus(id);
+            await updateCommentStatusById(id);
             await fetchData(id);
             callback(id);
             Message.success('回复成功!');

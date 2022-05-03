@@ -5,7 +5,7 @@ import {defaultRoute} from '@/routes';
 import React, {useEffect, useRef, useState} from 'react';
 import styles from './style/index.module.less';
 import {login} from "@/api/login";
-import {StatusCode} from "@/constant/status";
+import {StatusCode, StatusMessage} from "@/constant/status";
 import {aesDecrypt, aesEncrypt} from "@/utils/encryptor";
 import {keys} from "@/constant/keys";
 
@@ -14,9 +14,9 @@ const {REMEMBER_ME, USER_STATUS} = keys;
 
 export default function LoginForm() {
     const formRef = useRef<FormInstance>();
-    const [errorMessage, setErrorMessage] = useState('');
-    const [loading, setLoading] = useState(false);
-    const [rememberPassword, setRememberPassword] = useState(false);
+    const [errorMessage, setErrorMessage] = useState<string>('');
+    const [loading, setLoading] = useState<boolean>(false);
+    const [rememberPassword, setRememberPassword] = useState<boolean>(false);
 
     // 读取 localStorage 设置初始值
     useEffect(() => {
@@ -59,16 +59,16 @@ export default function LoginForm() {
         }
         switch (res.code) {
             case StatusCode.PASSWORD_ERROR:
-                setErrorMessage("用户名或密码错误!");
+                setErrorMessage(StatusMessage.PASSWORD_ERROR);
                 break;
             case StatusCode.ACCOUNT_DISABLED:
-                setErrorMessage("账号已被禁用!");
+                setErrorMessage(StatusMessage.ACCOUNT_DISABLED);
                 break;
             case StatusCode.OK:
                 afterLoginSuccess(params);
                 break;
             default:
-                setErrorMessage("未知错误!");
+                setErrorMessage(StatusMessage.UNKNOWN_ERROR);
                 break;
         }
         setLoading(false);

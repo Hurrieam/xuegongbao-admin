@@ -2,16 +2,20 @@ import axios from "axios";
 import qs from "qs";
 import Message from "@arco-design/web-react/es/Message";
 import {keys} from "@/constant/keys";
+import {StatusCode} from "@/constant/status";
 
 const myAxios = axios.create({
-    baseURL: process.env.REACT_APP_AXIOS_BASE_URL,
+    // baseURL: process.env.REACT_APP_AXIOS_BASE_URL,
+    baseURL: "https://xgb.onezol.com/api",
     timeout: 5000
 });
 
 myAxios.interceptors.request.use(
     (config) => {
+        const {pathname} = window.location;
+
         const token = localStorage.getItem(keys.USER_TOKEN);
-        if (!token) {
+        if (pathname != "/login" && !token) {
             window.location.href = "/login";
             return;
         }
@@ -20,17 +24,13 @@ myAxios.interceptors.request.use(
     },
     () => {
         Message.error("网络错误!");
-        setTimeout(() => {
-            window.location.href = "/login";
-        }, 2000);
-        return;
     }
 );
 
 myAxios.interceptors.response.use(
     (response) => {
-        // 如果是/login请求,则把token存入localStorage
-        if (response.config.url === "/login") {
+        // 如果是/login请求且登陆成功,则把token存入localStorage
+        if (response.config.url === "/login" && response.data.code === StatusCode.OK) {
             localStorage.setItem(keys.USER_TOKEN, response.data.data.token);
         }
         return response.data;
@@ -42,7 +42,7 @@ myAxios.interceptors.response.use(
             Message.error("您的身份已过期,请重新登录!");
             setTimeout(() => {
                 window.location.href = "/login";
-            }, 2000);
+            }, 3000);
         }
     }
 );

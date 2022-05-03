@@ -2,6 +2,7 @@ import React from 'react';
 import {Form, Input, Message, Modal} from '@arco-design/web-react';
 import {isValidString} from "@/utils/string";
 import {addPhoneNumber} from "@/api/phonebook";
+import {StatusCode, StatusMessage} from "@/constant/status";
 
 const FormItem = Form.Item;
 
@@ -16,14 +17,14 @@ const PhoneBookDetail: React.FC<API.DetailModalProps> = ({visible, callback, hid
         }
         try {
             const {code}: API.Response = await addPhoneNumber({deptName, phone});
-            if (code != 10000) {
+            if (code != StatusCode.OK) {
                 Message.error("添加失败!");
                 return;
             }
             Message.success("添加成功!");
             callback(null);
         } catch (e) {
-            Message.error("网络错误!");
+            Message.error(StatusMessage.NETWORK_ERROR);
         } finally {
             hidden();
             clearReplyContent();

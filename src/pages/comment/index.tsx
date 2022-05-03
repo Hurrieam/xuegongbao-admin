@@ -2,9 +2,10 @@ import React, {useEffect, useState} from 'react';
 import {Badge, Button, Card, Message, PaginationProps, Popconfirm, Space, Table} from '@arco-design/web-react';
 import {IconDelete} from '@arco-design/web-react/icon';
 import CommentDetail from "@/pages/comment/CommentDetail";
-import {deleteComment, getComments} from "@/api/comment";
 import {formatDate} from "@/utils/date";
 import {substrAndEllipsis} from "@/utils/string";
+import {deleteCommentById, getCommentList} from "@/api/comment";
+import {StatusCode, StatusMessage} from "@/constant/status";
 
 const Comment = () => {
     const [data, setData] = useState<API.Comment[]>([]);
@@ -27,13 +28,13 @@ const Comment = () => {
     }, [pagination.current]);
 
     const fetchData = async () => {
-        const {code, data}: API.Response = await getComments(
+        const {code, data}: API.Response = await getCommentList(
             (pagination.current - 1) * pagination.pageSize,
             pagination.pageSize
         );
 
-        if (code != 10000) {
-            Message.error("获取评论失败");
+        if (code != StatusCode.OK) {
+            Message.error(StatusMessage.FETCH_DATA_ERROR);
             setLoading(false);
             return;
         }
@@ -52,13 +53,13 @@ const Comment = () => {
     }
 
     const onDelete = async (record: API.Comment) => {
-        const {code}: API.Response = await deleteComment(record.id);
-        if (code != 10000) {
-            Message.error("删除评论失败!");
+        const {code}: API.Response = await deleteCommentById(record.id);
+        if (code != StatusCode.OK) {
+            Message.error(StatusMessage.DELETE_FAILED);
             return;
         }
         setData(data.filter(item => item.id !== record.id));
-        Message.success("删除评论成功!");
+        Message.success(StatusMessage.DELETE_OK);
     }
 
     const doCallback = (id: number) => {

@@ -7,11 +7,6 @@ const LostAndFoundDetail: React.FC<API.DetailModalProps> = ({visible, data, hidd
         if (!data) return;
     }, [data]);
 
-    const doOk = () => {
-        console.log(imageMemo);
-        // hidden();
-    };
-
     const doCancel = () => {
         hidden();
     }
@@ -74,7 +69,6 @@ const LostAndFoundDetail: React.FC<API.DetailModalProps> = ({visible, data, hidd
         <Modal
             title='详细信息'
             visible={visible}
-            onOk={doOk}
             onCancel={doCancel}
             autoFocus={false}
             focusLock={true}

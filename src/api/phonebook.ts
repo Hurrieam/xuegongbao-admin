@@ -13,7 +13,7 @@ export const addPhoneNumber = (data: API.PhoneBook): Promise<API.Response> => {
  * @param start
  * @param limit
  */
-export const getPhoneBook = (start: number, limit: number): Promise<API.Response> => {
+export const getPhoneBookList = (start: number, limit: number): Promise<API.Response> => {
     return get('/phonebook/list', {start, limit});
 };
 
@@ -21,6 +21,6 @@ export const getPhoneBook = (start: number, limit: number): Promise<API.Response
  * 删除联系人
  * @param id
  */
-export const deletePhoneNumber = (id: number): Promise<API.Response> => {
+export const deletePhoneNumberById = (id: number): Promise<API.Response> => {
     return post('/phonebook/delete', {id});
 };

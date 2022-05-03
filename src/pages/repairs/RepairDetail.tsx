@@ -2,6 +2,7 @@ import React, {useEffect, useState} from 'react';
 import {Descriptions, Message, Modal, Tag} from '@arco-design/web-react';
 import {updateRepairItemStatusById} from "@/api/dorm-repair";
 import {formatDate} from "@/utils/date";
+import {StatusCode, StatusMessage} from "@/constant/status";
 
 const RepairDetail: React.FC<API.DetailModalProps> = ({visible, data, callback, hidden}: API.DetailModalProps) => {
     const [state, setState] = useState<boolean>(false);
@@ -13,16 +14,16 @@ const RepairDetail: React.FC<API.DetailModalProps> = ({visible, data, callback, 
     const doOk = async () => {
         try {
             const {code} = await updateRepairItemStatusById(data.id);
-            if (code != 10000) {
-                Message.error('修改失败!');
+            if (code != StatusCode.OK) {
+                Message.error(StatusMessage.UPDATE_STATUS_ERROR);
                 return;
             }
             setState(true);
             data.status = true;
             callback && callback(data);
-            Message.success('修改成功!');
+            Message.success(StatusMessage.UPDATE_STATUS_OK);
         } catch (e) {
-            Message.error('网络错误!');
+            Message.error(StatusMessage.NETWORK_ERROR);
         }
     };
 
