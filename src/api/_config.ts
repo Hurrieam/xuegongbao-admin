@@ -36,9 +36,7 @@ myAxios.interceptors.response.use(
         return response.data;
     },
     (error) => {
-        if (!error.response) {
-            Message.error("网络错误!");
-        } else if (error.response.status === 401) {
+        if (error && error.response.status === 401) {
             Message.error("您的身份已过期,请重新登录!");
             setTimeout(() => {
                 window.location.href = "/login";
