@@ -60,7 +60,7 @@ declare namespace API {
         status: boolean;
     }
 
-    type Reservation ={
+    type Reservation = {
         id: number;
         type: string;
         stuName: string;
@@ -69,5 +69,14 @@ declare namespace API {
         time: string;
         contact: string;
         status: boolean;
+    }
+
+    type EvalItem = {
+        id: number;
+        canteenName: string;
+        content: string;
+        totalScore: number;
+        mainProblem: string;
+        createdAt: string;
     }
 }

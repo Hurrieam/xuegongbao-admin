@@ -6,7 +6,7 @@ import {substrAndEllipsis} from "@/utils/string";
 import {deleteLAFById, getLAFList} from "@/api/lostandfound";
 import {StatusCode, StatusMessage} from "@/constant/status";
 
-function LostAndFound() {
+const LostAndFound: React.FC = () => {
     const [data, setData] = useState<API.LostAndFound[]>([]);
     const [loading, setLoading] = useState<boolean>(true);
     const [visible, setVisible] = useState<boolean>(false);

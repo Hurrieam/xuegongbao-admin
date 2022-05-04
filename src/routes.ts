@@ -26,6 +26,10 @@ export const routes = [
     key: "dashboard/lostandfound",
   },
   {
+    name: "食堂评估",
+    key: "dashboard/evaluate",
+  },
+  {
     name: "系统信息",
     key: "dashboard/system",
   }

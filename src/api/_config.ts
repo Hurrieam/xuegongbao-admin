@@ -5,8 +5,7 @@ import {keys} from "@/constant/keys";
 import {StatusCode} from "@/constant/status";
 
 const myAxios = axios.create({
-    // baseURL: process.env.REACT_APP_AXIOS_BASE_URL,
-    baseURL: "https://xgb.onezol.com/api",
+    baseURL: process.env.REACT_APP_AXIOS_BASE_URL,
     timeout: 5000
 });
 
@@ -36,7 +35,7 @@ myAxios.interceptors.response.use(
         return response.data;
     },
     (error) => {
-        if (error && error.response.status === 401) {
+        if (error && error.response && error.response.status == "401") {
             Message.error("您的身份已过期,请重新登录!");
             setTimeout(() => {
                 window.location.href = "/login";
