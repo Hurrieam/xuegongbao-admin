@@ -1,11 +1,10 @@
 import {get, post} from "@/api/_config";
-import {IResponse} from "@/types";
 
 /**
  * 添加一条回复留言
  * @param data
  */
-export const addComment = async (data): Promise<IResponse> => {
+export const addComment = async (data): Promise<API.Response> => {
     return await post("/comment/add", data);
 };
 
@@ -14,7 +13,7 @@ export const addComment = async (data): Promise<IResponse> => {
  * @param start
  * @param limit
  */
-export const getComments = async (start: number, limit: number): Promise<IResponse> => {
+export const getCommentList = async (start: number, limit: number): Promise<API.Response> => {
     return await get("/comment/list", {start, limit});
 }
 
@@ -22,7 +21,7 @@ export const getComments = async (start: number, limit: number): Promise<IRespon
  * 改变留言状态
  * @param id
  */
-export const changeStatus = async (id: number): Promise<IResponse> => {
+export const updateCommentStatusById = async (id: number): Promise<API.Response> => {
     return await post("/comment/status", {id: id});
 }
 
@@ -30,7 +29,7 @@ export const changeStatus = async (id: number): Promise<IResponse> => {
  * 删除留言
  * @param id
  */
-export const deleteComment = async (id: number): Promise<IResponse> => {
+export const deleteCommentById = async (id: number): Promise<API.Response> => {
     return await post("/comment/delete", {id: id});
 }
 
@@ -38,6 +37,6 @@ export const deleteComment = async (id: number): Promise<IResponse> => {
  * 根据留言id获取详细信息，包含回复留言
  * @param id
  */
-export const getCommentDetails = async (id: number): Promise<IResponse> => {
+export const getCommentDetailsById = async (id: number): Promise<API.Response> => {
     return await get("/comment/detail", {id: id});
 }

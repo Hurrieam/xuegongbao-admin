@@ -9,7 +9,7 @@ const System: React.FC = () => {
         value: '西安交通大学城市学院学工宝',
     }, {
         label: '创建时间',
-        value: '2022-2-25'
+        value: '2022-04-25'
     }, {
         label: '当前版本',
         value: 'v1.0.0',

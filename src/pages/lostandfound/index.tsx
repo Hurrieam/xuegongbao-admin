@@ -2,28 +2,15 @@ import React, {useEffect, useState} from 'react';
 import {Badge, Button, Card, Message, PaginationProps, Popconfirm, Space, Table} from '@arco-design/web-react';
 import {IconDelete} from '@arco-design/web-react/icon';
 import LostAndFoundDetail from "@/pages/lostandfound/LostAndFoundDetail";
-import {deleteLAF, getLAFs} from "@/api/lostandfound";
-import {IResponse} from "@/types";
 import {substrAndEllipsis} from "@/utils/string";
+import {deleteLAFById, getLAFList} from "@/api/lostandfound";
+import {StatusCode, StatusMessage} from "@/constant/status";
 
-export interface ILostAndFound {
-    id: number;
-    openid?: string;
-    itemName: string;
-    location?: string;
-    lostTime?: string;
-    description: string;
-    images?: string;
-    stuName?: string;
-    contact: string;
-    status?: boolean;
-}
-
-function LostAndFound() {
-    const [data, setData] = useState<ILostAndFound[]>([]);
+const LostAndFound: React.FC = () => {
+    const [data, setData] = useState<API.LostAndFound[]>([]);
     const [loading, setLoading] = useState<boolean>(true);
     const [visible, setVisible] = useState<boolean>(false);
-    const [currentItem, setCurrentItem] = useState<ILostAndFound>(null);
+    const [currentItem, setCurrentItem] = useState<API.LostAndFound>(null);
     const [pagination, setPagination] = useState<PaginationProps>({
         sizeCanChange: false,
         showTotal: true,
@@ -38,12 +25,12 @@ function LostAndFound() {
 
     const fetchData = async () => {
         setLoading(true);
-        const {code, data}: IResponse = await getLAFs(
+        const {code, data}: API.Response = await getLAFList(
             (pagination.current - 1) * pagination.pageSize,
             pagination.pageSize
         );
-        if (code != 10000) {
-            Message.error("获取失物招领信息失败");
+        if (code != StatusCode.OK) {
+            Message.error(StatusMessage.FETCH_DATA_ERROR);
             setLoading(false);
             return;
         }
@@ -56,20 +43,19 @@ function LostAndFound() {
         setLoading(false);
     }
 
-    const onView = (record: ILostAndFound) => {
+    const onView = (record: API.LostAndFound) => {
         setCurrentItem(record);
         setVisible(true);
     }
 
-    const onDelete = async (record: ILostAndFound) => {
-        console.log(record);
-        const {code}: IResponse = await deleteLAF(record.id);
-        if (code != 10000) {
-            Message.error("删除失物招领信息失败");
+    const onDelete = async (record: API.LostAndFound) => {
+        const {code}: API.Response = await deleteLAFById(record.id);
+        if (code != StatusCode.OK) {
+            Message.error(StatusMessage.DELETE_FAILED);
             return;
         }
         setData(data.filter(item => item.id !== record.id));
-        Message.success("删除失物招领信息成功");
+        Message.success(StatusMessage.DELETE_OK);
     }
 
     const doHidden = () => {
@@ -126,7 +112,7 @@ function LostAndFound() {
             title: "操作",
             dataIndex: 'operations',
             width: 200,
-            render: (_, record: ILostAndFound) => (
+            render: (_, record: API.LostAndFound) => (
                 <>
                     <Space>
                         <Button type="primary" size="small" onClick={() => onView(record)}>查看</Button>

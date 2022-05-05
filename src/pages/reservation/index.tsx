@@ -1,18 +1,16 @@
 import React, {useEffect, useState} from 'react';
 import {Badge, Button, Card, Message, PaginationProps, Popconfirm, Space, Table} from '@arco-design/web-react';
 import {IconDelete} from '@arco-design/web-react/icon';
-import RepairDetail from "@/pages/repairs/RepairDetail";
-import {deleteRepairItemById, getRepairList} from "@/api/dorm-repair";
-import {formatDate} from "@/utils/date";
+import {substrAndEllipsis} from "@/utils/string";
+import {deleteReservationById, getReservationList} from "@/api/reservation";
+import ReservationDetail from './ReservationDetail';
 import {StatusCode, StatusMessage} from "@/constant/status";
 
-
-
-const Repairs: React.FC = () => {
-    const [data, setData] = useState<API.RepairItem[]>([]);
+const Reservation: React.FC = () => {
+    const [data, setData] = useState<API.Reservation[]>([]);
     const [loading, setLoading] = useState<boolean>(true);
     const [visible, setVisible] = useState<boolean>(false);
-    const [currentItem, setCurrentItem] = useState<API.RepairItem>();
+    const [currentItem, setCurrentItem] = useState<API.Reservation>(null);
     const [pagination, setPagination] = useState<PaginationProps>({
         sizeCanChange: false,
         showTotal: true,
@@ -27,7 +25,7 @@ const Repairs: React.FC = () => {
 
     const fetchData = async () => {
         setLoading(true);
-        const {code, data}: API.Response = await getRepairList(
+        const {code, data}: API.Response = await getReservationList(
             (pagination.current - 1) * pagination.pageSize,
             pagination.pageSize
         );
@@ -45,13 +43,13 @@ const Repairs: React.FC = () => {
         setLoading(false);
     }
 
-    const onView = (record: API.RepairItem) => {
+    const onView = (record: API.Reservation) => {
         setCurrentItem(record);
         setVisible(true);
     }
 
-    const onDelete = async (record: API.RepairItem) => {
-        const {code}: API.Response = await deleteRepairItemById(record.id);
+    const onDelete = async (record: API.Reservation) => {
+        const {code}: API.Response = await deleteReservationById(record.id);
         if (code != StatusCode.OK) {
             Message.error(StatusMessage.DELETE_FAILED);
             return;
@@ -60,7 +58,7 @@ const Repairs: React.FC = () => {
         Message.success(StatusMessage.DELETE_OK);
     }
 
-    const doCallback = (newItem: API.RepairItem) => {
+    const doCallback = (newItem: API.Reservation) => {
         setData(data.map(item => item.id === newItem.id ? newItem : item));
     }
 
@@ -68,7 +66,7 @@ const Repairs: React.FC = () => {
         setVisible(false);
     }
 
-    function onChangeTable(pagination) {
+    const onChangeTable = (pagination) => {
         setPagination(pagination);
     }
 
@@ -78,25 +76,24 @@ const Repairs: React.FC = () => {
             dataIndex: 'id'
         },
         {
-            title: "报修内容",
-            dataIndex: 'itemName',
+            title: "咨询类型",
+            dataIndex: 'type',
         },
         {
-            title: "宿舍楼",
-            dataIndex: 'dorm'
+            title: "学生姓名",
+            dataIndex: 'stuName'
         },
         {
-            title: "房间号",
-            dataIndex: 'room'
+            title: "院系",
+            dataIndex: 'sdept'
         },
         {
-            title: "时间",
-            dataIndex: 'createdAt',
-            width: 200,
-            render: (value) => value ? formatDate(value) : '',
+            title: "内容",
+            dataIndex: 'content',
+            render: (text) => substrAndEllipsis(text, 20)
         },
         {
-            title: "是否处理",
+            title: "状态",
             dataIndex: 'status',
             render: (value: boolean) => (
                 <>
@@ -110,7 +107,7 @@ const Repairs: React.FC = () => {
             title: "操作",
             dataIndex: 'operations',
             width: 200,
-            render: (_, record: API.RepairItem) => (
+            render: (_, record: API.Reservation) => (
                 <>
                     <Space>
                         <Button type="primary" size="small" onClick={() => onView(record)}>查看</Button>
@@ -140,9 +137,10 @@ const Repairs: React.FC = () => {
                     onChange={onChangeTable}
                 />
             </Card>
-            <RepairDetail visible={visible} data={currentItem} callback={doCallback} hidden={doHidden}/>
+            <ReservationDetail visible={visible} data={currentItem} callback={doCallback} hidden={doHidden}/>
         </>
     );
 }
 
-export default Repairs;
+
+export default Reservation;

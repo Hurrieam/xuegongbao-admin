@@ -1,12 +1,10 @@
-import {IPhoneBook} from "@/pages/phonebook";
 import {get, post} from "@/api/_config";
-import {IResponse} from "@/types";
 
 /**
  * 添加联系人
  * @param data
  */
-export const addPhoneNumber = (data: IPhoneBook): Promise<IResponse> => {
+export const addPhoneNumber = (data: API.PhoneBook): Promise<API.Response> => {
     return post('/phonebook/add', data);
 };
 
@@ -15,7 +13,7 @@ export const addPhoneNumber = (data: IPhoneBook): Promise<IResponse> => {
  * @param start
  * @param limit
  */
-export const getPhoneBook = (start: number, limit: number): Promise<IResponse> => {
+export const getPhoneBookList = (start: number, limit: number): Promise<API.Response> => {
     return get('/phonebook/list', {start, limit});
 };
 
@@ -23,6 +21,6 @@ export const getPhoneBook = (start: number, limit: number): Promise<IResponse> =
  * 删除联系人
  * @param id
  */
-export const deletePhoneNumber = (id: number): Promise<IResponse> => {
+export const deletePhoneNumberById = (id: number): Promise<API.Response> => {
     return post('/phonebook/delete', {id});
 };

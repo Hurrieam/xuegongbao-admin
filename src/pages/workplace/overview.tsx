@@ -1,12 +1,12 @@
-import React, {useState, useEffect, ReactNode} from 'react';
-import {Grid, Typography, Divider, Skeleton} from '@arco-design/web-react';
+import React, {ReactNode, useEffect, useState} from 'react';
+import {Divider, Grid, Message, Skeleton, Typography} from '@arco-design/web-react';
 import OverviewAreaLine from '@/components/Chart/overview-area-line';
-import axios from 'axios';
 import styles from './style/overview.module.less';
 import IconCalendar from './assets/calendar.svg';
 import IconComments from './assets/comments.svg';
 import IconContent from './assets/content.svg';
 import IconIncrease from './assets/increase.svg';
+import {getDayUsage, getMonthUsage} from "@/api/usage";
 
 const {Row, Col} = Grid;
 
@@ -18,7 +18,7 @@ type StatisticItemType = {
     unit?: ReactNode;
 };
 
-function StatisticItem(props: StatisticItemType) {
+const StatisticItem: React.FC<StatisticItemType> = (props: StatisticItemType) => {
     const {icon, title, count, loading, unit} = props;
     return (
         <div className={styles.item}>
@@ -37,34 +37,56 @@ function StatisticItem(props: StatisticItemType) {
 }
 
 type DataType = {
-    allContents?: string;
-    liveContents?: string;
-    increaseComments?: string;
-    growthRate?: string;
-    chartData?: { count?: number; date?: string }[];
-    down?: boolean;
+    dayUsers: number;
+    dayComments: number;
+    dayRepairs: number;
+    dayReservations: number;
 };
+type IChartData = {
+    date: string;
+    count: number;
+}
 
 function Overview() {
-    const [data, setData] = useState<DataType>({});
-    const [loading, setLoading] = useState(true);
-
-    const fetchData = () => {
-        setLoading(true);
-        axios
-            .get('/api/workplace/overview-content')
-            .then((res) => {
-                setData(res.data);
-            })
-            .finally(() => {
-                setLoading(false);
-            });
-    };
+    const [data, setData] = useState<DataType>({
+        dayUsers: 0,
+        dayComments: 0,
+        dayRepairs: 0,
+        dayReservations: 0,
+    });
+    const [loading, setLoading] = useState<boolean>(true);
+    const [chartData, setChartData] = useState<IChartData[]>([]);
 
     useEffect(() => {
         fetchData();
     }, []);
 
+    const fetchData = async () => {
+        setLoading(true);
+        const {code: code1, data: data1} = await getDayUsage();
+        if (code1 !== 10000) {
+            Message.error("获取数据失败!");
+            return;
+        }
+        setData(data1);
+        const {code: code2, data: data2} = await getMonthUsage();
+        if (code2 !== 10000) {
+            Message.error("获取数据失败!");
+            return;
+        }
+        const array = data2.map((item: any) => {
+            return {
+                date: formatDate(item.createdAt),
+                count: item.users,
+            }
+        });
+        setChartData(array);
+        setLoading(false);
+    };
+    const formatDate = (myDate: string) => {
+        const date = new Date(myDate);
+        return date.getFullYear() + '-' + (date.getMonth() + 1) + '-' + date.getDate();
+    }
     return (
         <div className={styles.container}>
             <Typography.Title heading={5} style={{marginTop: 0}}>
@@ -76,7 +98,7 @@ function Overview() {
                     <StatisticItem
                         icon={<IconCalendar/>}
                         title="今日使用人数"
-                        count={data.allContents}
+                        count={data.dayUsers}
                         loading={loading}
                         unit="个"
                     />
@@ -84,9 +106,9 @@ function Overview() {
                 <Divider type="vertical" className={styles.divider}/>
                 <Col flex={1}>
                     <StatisticItem
-                        icon={<IconContent/>}
+                        icon={<IconComments/>}
                         title="今日留言数"
-                        count={data.liveContents}
+                        count={data.dayComments}
                         loading={loading}
                         unit="条"
                     />
@@ -94,9 +116,9 @@ function Overview() {
                 <Divider type="vertical" className={styles.divider}/>
                 <Col flex={1}>
                     <StatisticItem
-                        icon={<IconComments/>}
+                        icon={<IconContent/>}
                         title="今日报修单数"
-                        count={data.increaseComments}
+                        count={data.dayRepairs}
                         loading={loading}
                         unit="单"
                     />
@@ -105,25 +127,22 @@ function Overview() {
                 <Col flex={1}>
                     <StatisticItem
                         icon={<IconIncrease/>}
-                        title="今日反馈数"
-                        count={data.increaseComments}
+                        title="今日预约数"
+                        count={data.dayReservations}
                         loading={loading}
-                        unit="条"
+                        unit="个"
                     />
                 </Col>
             </Row>
             <Divider/>
             <div>
                 <div className={styles.ctw}>
-                    <Typography.Paragraph
-                        className={styles['chart-title']}
-                        style={{marginBottom: 0}}
-                    >
+                    <Typography.Paragraph className={styles['chart-title']} style={{marginBottom: 0}}>
                         使用人数
-                        <span className={styles['chart-sub-title']}> 近1年</span>
+                        <span className={styles['chart-sub-title']}> 近1个月</span>
                     </Typography.Paragraph>
                 </div>
-                <OverviewAreaLine data={data.chartData} loading={loading}/>
+                <OverviewAreaLine data={chartData} loading={loading}/>
             </div>
         </div>
     );

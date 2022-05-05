@@ -1,10 +1,9 @@
 import React, {useEffect, useState} from 'react';
 import {Descriptions, Message, Modal, Tag} from '@arco-design/web-react';
-import {updateRepairItemStatusById} from "@/api/dorm-repair";
-import {formatDate} from "@/utils/date";
+import {updateReservationStatusById} from "@/api/reservation";
 import {StatusCode, StatusMessage} from "@/constant/status";
 
-const RepairDetail: React.FC<API.DetailModalProps> = ({visible, data, callback, hidden}: API.DetailModalProps) => {
+const ReservationDetail: React.FC<API.DetailModalProps> = ({visible, data, callback, hidden}: API.DetailModalProps) => {
     const [state, setState] = useState<boolean>(false);
     useEffect(() => {
         if (!data) return;
@@ -13,7 +12,7 @@ const RepairDetail: React.FC<API.DetailModalProps> = ({visible, data, callback, 
 
     const doOk = async () => {
         try {
-            const {code} = await updateRepairItemStatusById(data.id);
+            const {code} = await updateReservationStatusById(data.id);
             if (code != StatusCode.OK) {
                 Message.error(StatusMessage.UPDATE_STATUS_ERROR);
                 return;
@@ -31,29 +30,26 @@ const RepairDetail: React.FC<API.DetailModalProps> = ({visible, data, callback, 
         hidden();
     }
 
-    const getRows = (data: API.RepairItem) => {
+    const getRows = (data: API.Reservation) => {
         if (!data) return [];
         return [{
-            label: '报修内容',
-            value: data.itemName
-        }, {
-            label: '详情描述',
-            value: data.description
-        }, {
-            label: '宿舍楼号',
-            value: data.dorm
-        }, {
-            label: '房间号',
-            value: data.room
+            label: '咨询类型',
+            value: data.type,
         }, {
             label: '学生姓名',
             value: data.stuName
         }, {
+            label: '所属院系',
+            value: data.sdept
+        }, {
+            label: '咨询内容',
+            value: data.content
+        }, {
+            label: '预定时间',
+            value: data.time
+        }, {
             label: '联系方式',
             value: data.contact
-        }, {
-            label: '报修时间',
-            value: formatDate(data.createdAt)
         }, {
             label: '当前状态',
             value: state ? (<Tag color="#00b42a">已处理</Tag>) : (<Tag color="#f53f3f">未处理</Tag>)
@@ -83,4 +79,4 @@ const RepairDetail: React.FC<API.DetailModalProps> = ({visible, data, callback, 
         </Modal>
     )
 }
-export default RepairDetail;
+export default ReservationDetail;

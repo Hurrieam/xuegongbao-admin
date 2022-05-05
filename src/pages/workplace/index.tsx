@@ -4,7 +4,6 @@ import Shortcuts from './shortcuts';
 import Announcement from './announcement';
 import Carousel from './carousel';
 import styles from './style/index.module.less';
-import './mock';
 
 const gutter = 16;
 

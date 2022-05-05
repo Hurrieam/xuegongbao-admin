@@ -1,11 +1,12 @@
 import React from 'react';
 import {Form, Input, Message, Modal} from '@arco-design/web-react';
-import {IDetailModalProps, IResponse} from "@/types";
 import {isValidString} from "@/utils/string";
 import {addPhoneNumber} from "@/api/phonebook";
+import {StatusCode, StatusMessage} from "@/constant/status";
 
 const FormItem = Form.Item;
-const PhoneBookDetail: React.FC<IDetailModalProps> = ({visible, callback, hidden}: IDetailModalProps) => {
+
+const PhoneBookDetail: React.FC<API.DetailModalProps> = ({visible, callback, hidden}: API.DetailModalProps) => {
     const [form] = Form.useForm();
     const doOk = async () => {
         const deptName = form.getFieldValue("deptName");
@@ -14,16 +15,16 @@ const PhoneBookDetail: React.FC<IDetailModalProps> = ({visible, callback, hidden
             Message.error('部门名称和电话号码不能为空');
             return;
         }
-        const {code}: IResponse = await addPhoneNumber({deptName, phone});
         try {
-            if (code != 10000) {
-                Message.error("添加失败");
+            const {code}: API.Response = await addPhoneNumber({deptName, phone});
+            if (code != StatusCode.OK) {
+                Message.error("添加失败!");
                 return;
             }
-            Message.success("添加成功");
+            Message.success("添加成功!");
             callback(null);
         } catch (e) {
-            Message.error("添加失败");
+            Message.error(StatusMessage.NETWORK_ERROR);
         } finally {
             hidden();
             clearReplyContent();

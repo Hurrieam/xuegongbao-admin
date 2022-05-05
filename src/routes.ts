@@ -6,16 +6,16 @@ export const routes = [
     key: "dashboard/workplace",
   },
   {
+    name: "电话簿",
+    key: "dashboard/phonebook",
+  },
+  {
     name: "学生留言",
     key: "dashboard/comment",
   },
   {
-    name: "反馈中心",
-    key: "dashboard/feedback",
-  },
-  {
-    name: "电话簿",
-    key: "dashboard/phonebook",
+    name: "咨询预约",
+    key: "dashboard/reservation",
   },
   {
     name: "宿舍报修",
@@ -24,6 +24,10 @@ export const routes = [
   {
     name: "失物招领",
     key: "dashboard/lostandfound",
+  },
+  {
+    name: "食堂评估",
+    key: "dashboard/evaluate",
   },
   {
     name: "系统信息",

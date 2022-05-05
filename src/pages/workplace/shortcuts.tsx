@@ -1,6 +1,6 @@
 import React from 'react';
 import {Card} from '@arco-design/web-react';
-import {IconFile, IconMobile, IconSettings, IconStorage,} from '@arco-design/web-react/icon';
+import {IconFile, IconMobile, IconCompass, IconStorage,} from '@arco-design/web-react/icon';
 import styles from './style/shortcuts.module.less';
 
 interface IShortcuts {
@@ -15,7 +15,7 @@ function Shortcuts() {
         {
             title: "学院官网",
             link: 'http://www.xjtucc.cn/',
-            icon: <IconSettings/>,
+            icon: <IconCompass />,
         },
         {
             title: "学工信息网",

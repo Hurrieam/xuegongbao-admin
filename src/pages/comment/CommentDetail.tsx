@@ -1,18 +1,17 @@
 import React, {Fragment, useEffect, useState} from 'react';
-import {Modal, Input, Message, Spin} from '@arco-design/web-react';
-import {IDetailModalProps, IResponse} from "@/types";
-import {addComment, changeStatus, getCommentDetails} from "@/api/comment";
-import {IComment} from "@/pages/comment/index";
+import {Input, Message, Modal, Spin} from '@arco-design/web-react';
 import styles from "./style/index.module.less";
 import {formatDate} from "@/utils/date";
+import {addComment, getCommentDetailsById, updateCommentStatusById} from "@/api/comment";
+import {StatusCode, StatusMessage} from "@/constant/status";
 
 const TextArea = Input.TextArea;
 const ADMIN_OPENID = "00000000";
 
-function CommentDetail({visible, data: id, callback, hidden}: IDetailModalProps) {
-    const [replyContent, setReplyContent] = useState('');
+function CommentDetail({visible, data: id, callback, hidden}: API.DetailModalProps) {
+    const [replyContent, setReplyContent] = useState<string>('');
     const [loading, setLoading] = React.useState(false);
-    const [comments, setComments] = useState<IComment[]>([]);
+    const [comments, setComments] = useState<API.Comment[]>([]);
     useEffect(() => {
         if (!id) return;
         fetchData(id);
@@ -20,9 +19,9 @@ function CommentDetail({visible, data: id, callback, hidden}: IDetailModalProps)
 
     const fetchData = async (id: number) => {
         setLoading(true);
-        const {code, data} = await getCommentDetails(id);
-        if (code != 10000) {
-            Message.error("获取留言详情失败!");
+        const {code, data} = await getCommentDetailsById(id);
+        if (code != StatusCode.OK) {
+            Message.error(StatusMessage.FETCH_DATA_ERROR);
             return;
         }
         setComments(data.items);
@@ -36,18 +35,18 @@ function CommentDetail({visible, data: id, callback, hidden}: IDetailModalProps)
             Message.error("请输入回复内容");
             return;
         }
-        const reply: IComment = {
+        const reply: API.Comment = {
             openid: ADMIN_OPENID,
             content: replyContent,
             parentId: id
         };
         try {
-            const {code}: IResponse = await addComment(reply);
-            if (code != 10000) {
+            const {code}: API.Response = await addComment(reply);
+            if (code != StatusCode.OK) {
                 Message.error(`回复留言失败，错误码：${code}`);
                 return;
             }
-            await changeStatus(id);
+            await updateCommentStatusById(id);
             await fetchData(id);
             callback(id);
             Message.success('回复成功!');
@@ -87,7 +86,7 @@ function CommentDetail({visible, data: id, callback, hidden}: IDetailModalProps)
                                             <div className={styles.comment_item}>
                                                 <span className={styles.comment_content}>{item.content}</span>
                                                 <span
-                                                    className={styles.reply_time}>{formatDate(item.createdAt).substring(0, 15)}</span>
+                                                    className={styles.reply_time}>{formatDate(item.createdAt)}</span>
                                             </div>
                                         ) : (
                                             <div className={styles.reply_item}>
@@ -96,7 +95,7 @@ function CommentDetail({visible, data: id, callback, hidden}: IDetailModalProps)
                                                     <span>{item.content}</span>
                                                 </div>
                                                 <span
-                                                    className={styles.reply_time}>{formatDate(item.createdAt).substring(0, 15)}</span>
+                                                    className={styles.reply_time}>{formatDate(item.createdAt)}</span>
                                             </div>
                                         )
                                     }
