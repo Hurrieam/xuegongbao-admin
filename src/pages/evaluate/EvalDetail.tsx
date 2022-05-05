@@ -2,7 +2,7 @@ import React, {useEffect} from 'react';
 import {Descriptions, Modal} from '@arco-design/web-react';
 
 interface IEvalDetail {
-    title: string;
+    question: string;
     score: string;
     explain: string;
 }
@@ -12,7 +12,7 @@ function EvalDetail({visible, data,  hidden}: API.DetailModalProps) {
     useEffect(() => {
         if (!data) return;
         parseData(data.content);
-    }, []);
+    }, [data]);
 
     const parseData = (content: string) => {
         let res = [];
@@ -20,7 +20,7 @@ function EvalDetail({visible, data,  hidden}: API.DetailModalProps) {
             const arr = JSON.parse(content);
             arr.forEach((item: IEvalDetail) => {
                 res.push({
-                    title: item.title,
+                    title: item.question,
                     content: [
                         {
                             label: "评分",

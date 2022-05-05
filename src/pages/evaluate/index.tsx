@@ -21,7 +21,9 @@ const Row = Grid.Row;
 const Col = Grid.Col;
 
 interface ISummaryItem {
-    name: string;  // cs, zk, mz, cy
+    canteenName: string;  // CS, ZK, MZ, CY
+    totalScore: number;
+    totalCount: number;
     avgScore: number;
     rate: number;
 }
@@ -41,10 +43,10 @@ const CanteenEval: React.FC = () => {
     });
     const colors = ['#ff7d00', '#00b42a', '#0fc6c2', '#165dff'];
     const mapper = {
-        cs: '城市餐厅',
-        zk: '中快餐厅',
-        mz: '民族餐厅',
-        cy: '城苑餐厅'
+        CS: '城市餐厅',
+        ZK: '中快餐厅',
+        MZ: '民族餐厅',
+        CY: '城苑餐厅'
     }
 
     useEffect(() => {
@@ -173,18 +175,18 @@ const CanteenEval: React.FC = () => {
                                             size="large"
                                             color={colors[index]}
                                             formatText={n => n + "分"}
-                                            percent={item.avgScore}
+                                            percent={Number(item.avgScore.toFixed(0))}
                                             style={{wordBreak: "keep-all"}}/>
                                     </Col>
                                     <Col span={16}>
                                         <Statistic
-                                            title='城市餐厅'
-                                            value={item.rate}
+                                            title={mapper[item.canteenName]}
+                                            value={item.rate * 100}
                                             precision={2}
-                                            prefix={item.rate > 0 ? <IconArrowRise/> : <IconArrowFall/>}
-                                            suffix='%'
+                                            prefix={item.rate >= 0 ? <IconArrowRise/> : <IconArrowFall/>}
+                                            suffix='分'
                                             countUp
-                                            styleValue={{color: item.rate > 0 ? '#00b42a' : '#ee4d38'}}
+                                            styleValue={{color: item.rate >= 0 ? '#00b42a' : '#ee4d38'}}
                                         />
                                     </Col>
                                 </Row>
