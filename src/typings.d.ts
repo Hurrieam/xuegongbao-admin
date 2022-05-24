@@ -29,7 +29,6 @@ declare namespace API {
 
     type LostAndFound = {
         id: number;
-        openid?: string;
         itemName: string;
         location?: string;
         lostTime?: string;
@@ -48,7 +47,6 @@ declare namespace API {
 
     type  RepairItem = {
         id: number;
-        openid: string;
         itemName: string;
         description?: string;
         dorm: string;

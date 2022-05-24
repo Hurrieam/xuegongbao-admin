@@ -4,9 +4,9 @@ import styles from "./style/index.module.less";
 import {formatDate} from "@/utils/date";
 import {addComment, getCommentDetailsById, updateCommentStatusById} from "@/api/comment";
 import {StatusCode, StatusMessage} from "@/constant/status";
+import {ADMIN_OPENID} from "@/constant/others";
 
 const TextArea = Input.TextArea;
-const ADMIN_OPENID = "00000000";
 
 function CommentDetail({visible, data: id, callback, hidden}: API.DetailModalProps) {
     const [replyContent, setReplyContent] = useState<string>('');
@@ -36,7 +36,6 @@ function CommentDetail({visible, data: id, callback, hidden}: API.DetailModalPro
             return;
         }
         const reply: API.Comment = {
-            openid: ADMIN_OPENID,
             content: replyContent,
             parentId: id
         };
