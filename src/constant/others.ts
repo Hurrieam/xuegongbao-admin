@@ -1,0 +1,1 @@
+export const ADMIN_OPENID = "00000000"

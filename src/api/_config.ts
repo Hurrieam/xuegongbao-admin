@@ -3,6 +3,7 @@ import qs from "qs";
 import Message from "@arco-design/web-react/es/Message";
 import {keys} from "@/constant/keys";
 import {StatusCode} from "@/constant/status";
+import {ADMIN_OPENID} from "@/constant/others";
 
 const myAxios = axios.create({
     baseURL: process.env.REACT_APP_AXIOS_BASE_URL,
@@ -19,6 +20,7 @@ myAxios.interceptors.request.use(
             return;
         }
         config.headers["Authorization"] = token;
+        config.headers["Openid"] = ADMIN_OPENID;
         return config;
     },
     () => {
