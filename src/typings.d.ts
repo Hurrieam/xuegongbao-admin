@@ -21,6 +21,7 @@ declare namespace API {
     type  Comment = {
         id?: number;
         openid?: string;
+        stuName: string;
         parentId?: string;
         content: string;
         createdAt?: any;
