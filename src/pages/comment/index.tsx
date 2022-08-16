@@ -121,7 +121,7 @@ const Comment = () => {
                         <Button type="primary" size="small" onClick={() => onView(record)}>回复</Button>
                         <Popconfirm
                             title='确定删除吗?'
-                            onOk={() => onDelete(record)}
+                            onOk={onDelete.bind(record)}
                         >
                             <Button type="primary" icon={<IconDelete/>} status="danger" size="small">删除</Button>
                         </Popconfirm>

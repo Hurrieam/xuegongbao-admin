@@ -30,17 +30,25 @@ myAxios.interceptors.request.use(
 
 myAxios.interceptors.response.use(
     (response) => {
+        const {data,config} = response;
         // 如果是/login请求且登陆成功,则把token存入localStorage
-        if (response.config.url === "/login" && response.data.code === StatusCode.OK) {
+        if (config.url === "/login" && data.code === StatusCode.OK) {
             localStorage.setItem(keys.USER_TOKEN, response.data.data.token);
         }
-        return response.data;
+        // 没有权限则重定向到login页面
+        if (data.code === 10009) {
+            Message.error("您的身份已过期,请重新登录!");
+            setTimeout(() => {
+                window.location.href = "/login";
+            }, 3000);
+        }
+        return data;
     },
     (error) => {
-        if(!error || !error.response) {
+        if (!error || !error.response) {
             Message.error("网络错误!");
             return;
-        }else if (error && error.response && error.response.status == "401") {
+        } else if (error && error.response && error.response.status == "401") {
             Message.error("您的身份已过期,请重新登录!");
             setTimeout(() => {
                 window.location.href = "/login";

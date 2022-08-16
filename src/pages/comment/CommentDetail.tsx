@@ -36,6 +36,7 @@ function CommentDetail({visible, data: id, callback, hidden}: API.DetailModalPro
             return;
         }
         const reply: API.Comment = {
+            stuName: "Administrator",
             content: replyContent,
             parentId: id
         };
