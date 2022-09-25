@@ -77,7 +77,7 @@ function Overview() {
         const array = data2.map((item: any) => {
             return {
                 date: formatDate(item.createdAt),
-                count: item.users,
+                count: item.userCount,
             }
         });
         setChartData(array);
