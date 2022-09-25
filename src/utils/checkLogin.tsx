@@ -1,5 +1,6 @@
-import { keys } from "@/constant/keys";
+import {StorageKey} from "@/constant/keys";
+import storage from "@/utils/storage";
 
 export default function checkLogin() {
-  return localStorage.getItem(keys.USER_STATUS) === 'login';
+    return storage.getItem(StorageKey.USER_STATUS) === "login";
 }

@@ -37,7 +37,7 @@ function getIconFromKey(key) {
             return <IconDashboard className={styles.icon}/>;
         case 'dashboard/phonebook':
             return <IconFile className={styles.icon}/>;
-        case 'dashboard/comment':
+        case 'dashboard/message':
             return <IconMessage className={styles.icon}/>;
         case 'dashboard/reservation':
             return <IconSubscribed className={styles.icon}/>;

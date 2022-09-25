@@ -1,11 +1,11 @@
-import {get, post} from "@/api/_config";
+import {reqForGet, reqForPost} from "@/api/_config";
 
 /**
  * 添加联系人
  * @param data
  */
-export const addPhoneNumber = (data: API.PhoneBook): Promise<API.Response> => {
-    return post('/phonebook/add', data);
+export const createPhoneNumber = (data: API.PhoneBook): Promise<API.Response> => {
+    return reqForPost('/phonebook/create', data);
 };
 
 /**
@@ -13,14 +13,14 @@ export const addPhoneNumber = (data: API.PhoneBook): Promise<API.Response> => {
  * @param start
  * @param limit
  */
-export const getPhoneBookList = (start: number, limit: number): Promise<API.Response> => {
-    return get('/phonebook/list', {start, limit});
+export const findPhoneBookList = (page: number, pageSize: number): Promise<API.Response> => {
+    return reqForGet('/phonebook/list', {page, pageSize});
 };
 
 /**
  * 删除联系人
  * @param id
  */
-export const deletePhoneNumberById = (id: number): Promise<API.Response> => {
-    return post('/phonebook/delete', {id});
+export const deletePhoneNumber = (id: number): Promise<API.Response> => {
+    return reqForPost('/phonebook/delete', {id});
 };

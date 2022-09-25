@@ -2,9 +2,10 @@ import React, {useEffect, useState} from 'react';
 import {Badge, Button, Card, Message, PaginationProps, Popconfirm, Space, Table} from '@arco-design/web-react';
 import {IconDelete} from '@arco-design/web-react/icon';
 import {substrAndEllipsis} from "@/utils/string";
-import {deleteReservationById, getReservationList} from "@/api/reservation";
-import ReservationDetail from './ReservationDetail';
 import {StatusCode, StatusMessage} from "@/constant/status";
+import ReservationModal from "@/pages/reservation/ReservationModal";
+import {deleteReservation, findReservationList} from "@/api/reservation";
+import {formatDate} from "@/utils/date";
 
 const Reservation: React.FC = () => {
     const [data, setData] = useState<API.Reservation[]>([]);
@@ -25,7 +26,7 @@ const Reservation: React.FC = () => {
 
     const fetchData = async () => {
         setLoading(true);
-        const {code, data}: API.Response = await getReservationList(
+        const {code, data}: API.Response = await findReservationList(
             (pagination.current - 1) * pagination.pageSize,
             pagination.pageSize
         );
@@ -49,7 +50,7 @@ const Reservation: React.FC = () => {
     }
 
     const onDelete = async (record: API.Reservation) => {
-        const {code}: API.Response = await deleteReservationById(record.id);
+        const {code}: API.Response = await deleteReservation(record.id);
         if (code != StatusCode.OK) {
             Message.error(StatusMessage.DELETE_FAILED);
             return;
@@ -81,11 +82,8 @@ const Reservation: React.FC = () => {
         },
         {
             title: "学生姓名",
-            dataIndex: 'stuName'
-        },
-        {
-            title: "院系",
-            dataIndex: 'sdept'
+            dataIndex: 'stuName',
+            render: (value) => value ? value : '***',
         },
         {
             title: "内容",
@@ -137,7 +135,7 @@ const Reservation: React.FC = () => {
                     onChange={onChangeTable}
                 />
             </Card>
-            <ReservationDetail visible={visible} data={currentItem} callback={doCallback} hidden={doHidden}/>
+            <ReservationModal visible={visible} data={currentItem?.id} callback={doCallback} hidden={doHidden}/>
         </>
     );
 }

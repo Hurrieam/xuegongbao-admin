@@ -1,11 +1,11 @@
 import React, {useEffect, useState} from 'react';
 import {Button, Card, Message, PaginationProps, Popconfirm, Table} from '@arco-design/web-react';
 import {IconDelete, IconPlus} from '@arco-design/web-react/icon';
-import PhoneEditor from "@/pages/phonebook/PhoneEditor";
-import {deletePhoneNumberById, getPhoneBookList} from "@/api/phonebook";
+import PhoneEditor from "@/pages/phonebook/PhoneBookModal";
+import {deletePhoneNumber, findPhoneBookList,} from "@/api/phonebook";
 import {StatusCode, StatusMessage} from "@/constant/status";
 
-const PhoneBook: React.FC = () => {
+const PhoneBookPage: React.FC = () => {
     const [data, setData] = useState<API.PhoneBook[]>([]);
     const [loading, setLoading] = useState<boolean>(true);
     const [visible, setVisible] = useState<boolean>(false);
@@ -23,7 +23,7 @@ const PhoneBook: React.FC = () => {
 
     const fetchData = async () => {
         setLoading(true);
-        const {code, data}: API.Response = await getPhoneBookList(
+        const {code, data}: API.Response = await findPhoneBookList(
             (pagination.current - 1) * pagination.pageSize,
             pagination.pageSize
         );
@@ -54,7 +54,7 @@ const PhoneBook: React.FC = () => {
     }
 
     const onDelete = async (record: API.PhoneBook) => {
-        const {code}: API.Response = await deletePhoneNumberById(record.id);
+        const {code}: API.Response = await deletePhoneNumber(record.id);
         if (code != StatusCode.OK) {
             Message.error(StatusMessage.DELETE_FAILED);
             return;
@@ -73,8 +73,18 @@ const PhoneBook: React.FC = () => {
             dataIndex: 'id'
         },
         {
-            title: "部门",
-            dataIndex: 'deptName'
+            title: "类型",
+            dataIndex: 'type',
+            render: (value: string) => (
+                <>
+                    {value === "DEPT" && (<span>部门</span>)}
+                    {value === "PEOPLE" && (<span>个人</span>)}
+                </>
+            )
+        },
+        {
+            title: "名称",
+            dataIndex: 'name'
         },
         {
             title: "电话号码",
@@ -117,4 +127,4 @@ const PhoneBook: React.FC = () => {
     );
 }
 
-export default PhoneBook;
+export default PhoneBookPage;

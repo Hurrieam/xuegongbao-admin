@@ -1,5 +1,6 @@
-export const keys = {
-    REMEMBER_ME: '_onezol.com_params',
-    USER_STATUS: '_onezol.com_user_status',
-    USER_TOKEN: '_onezol.com_user_token',
+export const StorageKey = {
+    REMEMBER_ME: 'ONEZOL.COM:REMEMBER_ME',
+    USER_STATUS: 'ONEZOL.COM:USER_STATUS',
+    USER_TOKEN: 'ONEZOL.COM:USER_TOKEN',
+    USER_ACCOUNT: 'ONEZOL.COM:USER_ACCOUNT',
 }

@@ -11,7 +11,7 @@ export const routes = [
   },
   {
     name: "学生留言",
-    key: "dashboard/comment",
+    key: "dashboard/message",
   },
   {
     name: "咨询预约",

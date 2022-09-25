@@ -6,7 +6,7 @@ import IconCalendar from './assets/calendar.svg';
 import IconComments from './assets/comments.svg';
 import IconContent from './assets/content.svg';
 import IconIncrease from './assets/increase.svg';
-import {getDayUsage, getMonthUsage} from "@/api/usage";
+import {findDayUsage, findMonthUsage} from "@/api/usage";
 
 const {Row, Col} = Grid;
 
@@ -38,7 +38,7 @@ const StatisticItem: React.FC<StatisticItemType> = (props: StatisticItemType) =>
 
 type DataType = {
     dayUsers: number;
-    dayComments: number;
+    dayMessages: number;
     dayRepairs: number;
     dayReservations: number;
 };
@@ -50,7 +50,7 @@ type IChartData = {
 function Overview() {
     const [data, setData] = useState<DataType>({
         dayUsers: 0,
-        dayComments: 0,
+        dayMessages: 0,
         dayRepairs: 0,
         dayReservations: 0,
     });
@@ -63,13 +63,13 @@ function Overview() {
 
     const fetchData = async () => {
         setLoading(true);
-        const {code: code1, data: data1} = await getDayUsage();
+        const {code: code1, data: data1} = await findDayUsage();
         if (code1 !== 10000) {
             Message.error("获取数据失败!");
             return;
         }
         setData(data1);
-        const {code: code2, data: data2} = await getMonthUsage();
+        const {code: code2, data: data2} = await findMonthUsage();
         if (code2 !== 10000) {
             Message.error("获取数据失败!");
             return;
@@ -108,7 +108,7 @@ function Overview() {
                     <StatisticItem
                         icon={<IconComments/>}
                         title="今日留言数"
-                        count={data.dayComments}
+                        count={data.dayMessages}
                         loading={loading}
                         unit="条"
                     />

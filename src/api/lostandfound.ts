@@ -1,11 +1,11 @@
-import {get, post} from "@/api/_config";
+import {reqForGet, reqForPost} from "@/api/_config";
 
 /**
  * 根据id获取招领信息
  * @param id
  */
-export const getLAFbyId = (id: string): Promise<API.Response> => {
-    return get("/laf/get",{id});
+export const findLafItem = (id: number): Promise<API.Response> => {
+    return reqForGet("/laf/detail",{id});
 };
 
 /**
@@ -13,14 +13,14 @@ export const getLAFbyId = (id: string): Promise<API.Response> => {
  * @param start
  * @param limit
  */
-export const getLAFList = (start: number, limit: number): Promise<API.Response> => {
-    return get("/laf/list", {start: start, limit});
+export const findLafList = (page: number, pageSize: number): Promise<API.Response> => {
+    return reqForGet("/laf/list", {page, pageSize});
 }
 
 /**
  * 删除一条失物招领信息
  * @param id
  */
-export const deleteLAFById = (id: number): Promise<API.Response> => {
-    return post("/laf/delete", {id});
+export const deleteLafItem = (id: number): Promise<API.Response> => {
+    return reqForPost("/laf/delete", {id});
 }

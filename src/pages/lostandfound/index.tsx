@@ -1,12 +1,13 @@
 import React, {useEffect, useState} from 'react';
 import {Badge, Button, Card, Message, PaginationProps, Popconfirm, Space, Table} from '@arco-design/web-react';
 import {IconDelete} from '@arco-design/web-react/icon';
-import LostAndFoundDetail from "@/pages/lostandfound/LostAndFoundDetail";
+import LostAndFoundDetail from "@/pages/lostandfound/LostAndFoundModal";
 import {substrAndEllipsis} from "@/utils/string";
-import {deleteLAFById, getLAFList} from "@/api/lostandfound";
 import {StatusCode, StatusMessage} from "@/constant/status";
+import {deleteLafItem, findLafList} from "@/api/lostandfound";
+import {formatDate} from "@/utils/date";
 
-const LostAndFound: React.FC = () => {
+const LostAndFoundPage: React.FC = () => {
     const [data, setData] = useState<API.LostAndFound[]>([]);
     const [loading, setLoading] = useState<boolean>(true);
     const [visible, setVisible] = useState<boolean>(false);
@@ -25,7 +26,7 @@ const LostAndFound: React.FC = () => {
 
     const fetchData = async () => {
         setLoading(true);
-        const {code, data}: API.Response = await getLAFList(
+        const {code, data}: API.Response = await findLafList(
             (pagination.current - 1) * pagination.pageSize,
             pagination.pageSize
         );
@@ -49,7 +50,7 @@ const LostAndFound: React.FC = () => {
     }
 
     const onDelete = async (record: API.LostAndFound) => {
-        const {code}: API.Response = await deleteLAFById(record.id);
+        const {code}: API.Response = await deleteLafItem(record.id);
         if (code != StatusCode.OK) {
             Message.error(StatusMessage.DELETE_FAILED);
             return;
@@ -69,32 +70,35 @@ const LostAndFound: React.FC = () => {
     const columns = [
         {
             title: "ID",
-            dataIndex: 'id'
+            dataIndex: 'id',
         },
         {
-            title: "物品名称",
-            dataIndex: 'itemName',
-        },
-        {
-            title: "丢失地点",
-            dataIndex: 'location',
-            render: (value: string) => (
-                <span>{value ? value : "未知"}</span>
+            title: "标题",
+            dataIndex: 'title',
+            render: (value:string) => (
+                <span>{substrAndEllipsis(value, 10)}</span>
             )
         },
         {
             title: "描述",
             dataIndex: 'description',
-            width: 250,
+            width: "20",
             render: (value: string) => (
-                <span>{substrAndEllipsis(value, 25)}</span>
+                <span>{substrAndEllipsis(value, 15)}</span>
             ),
         },
         {
-            title: "丢失时间",
-            dataIndex: 'lostTime',
+            title: "丢失地点",
+            dataIndex: 'location',
             render: (value: string) => (
-                <span>{value ? value : "未知"}</span>
+                <span>{value ? substrAndEllipsis(value, 7) : "未知"}</span>
+            )
+        },
+        {
+            title: "丢失时间",
+            dataIndex: 'date',
+            render: (value: string) => (
+                <span>{value ? substrAndEllipsis(value, 7) : "未知"}</span>
             )
         },
         {
@@ -107,6 +111,12 @@ const LostAndFound: React.FC = () => {
                     }
                 </>
             ),
+        }, {
+            title: "发布时间",
+            dataIndex: 'created_at',
+            render: (value: string) => (
+                <span>{value ? formatDate(value) : "未知"}</span>
+            )
         },
         {
             title: "操作",
@@ -115,10 +125,10 @@ const LostAndFound: React.FC = () => {
             render: (_, record: API.LostAndFound) => (
                 <>
                     <Space>
-                        <Button type="primary" size="small" onClick={() => onView(record)}>查看</Button>
+                        <Button type="primary" size="small" onClick={onView.bind(this, record)}>查看</Button>
                         <Popconfirm
                             title='确定删除吗?'
-                            onOk={() => onDelete(record)}
+                            onOk={onDelete.bind(this, record)}
                         >
                             <Button type="primary" icon={<IconDelete/>} status="danger" size="small">删除</Button>
                         </Popconfirm>
@@ -142,10 +152,10 @@ const LostAndFound: React.FC = () => {
                     onChange={onChangeTable}
                 />
             </Card>
-            <LostAndFoundDetail visible={visible} data={currentItem} hidden={doHidden}/>
+            <LostAndFoundDetail visible={visible} data={currentItem?.id} hidden={doHidden}/>
         </>
     );
 }
 
 
-export default LostAndFound;
+export default LostAndFoundPage;

@@ -1,14 +1,15 @@
-import { isSSR } from './is';
+import {isSSR} from './is';
 
 function getStorage() {
-  if (!isSSR) {
-    return localStorage;
-  }
+    if (!isSSR) {
+        return localStorage;
+    }
 
-  return {
-    getItem: () => '',
-    setItem: () => '',
-  };
+    return {
+        getItem: () => '',
+        setItem: () => '',
+        removeItem: () => ''
+    };
 }
 
 export default getStorage();
