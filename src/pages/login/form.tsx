@@ -7,10 +7,9 @@ import styles from './style/index.module.less';
 import {login} from "@/api/login";
 import {StatusCode, StatusMessage} from "@/constant/status";
 import {aesDecrypt, aesEncrypt} from "@/utils/encryptor";
-import {keys} from "@/constant/keys";
+import {StorageKey} from "@/constant/keys";
+import storage from "@/utils/storage";
 
-
-const {REMEMBER_ME, USER_STATUS} = keys;
 
 export default function LoginForm() {
     const formRef = useRef<FormInstance>();
@@ -20,7 +19,7 @@ export default function LoginForm() {
 
     // 读取 localStorage 设置初始值
     useEffect(() => {
-        const params = localStorage.getItem(REMEMBER_ME);
+        const params = storage.getItem(StorageKey.REMEMBER_ME);
         const rememberPassword = !!params;
         setRememberPassword(rememberPassword);
         if (formRef.current && rememberPassword) {
@@ -36,15 +35,19 @@ export default function LoginForm() {
         }
     }, []);
 
-    const afterLoginSuccess = (params) => {
+    const afterLoginSuccess = (params: API.LoginForm, token: string) => {
+        // 存储token
+        storage.setItem(StorageKey.USER_TOKEN, token);
         // 记住密码
         if (rememberPassword) {
-            localStorage.setItem(REMEMBER_ME, aesEncrypt(JSON.stringify(params)));
+            storage.setItem(StorageKey.REMEMBER_ME, aesEncrypt(JSON.stringify(params)));
         } else {
-            localStorage.removeItem(REMEMBER_ME);
+            storage.removeItem(StorageKey.REMEMBER_ME);
         }
+        // 记住用户名
+        storage.setItem(StorageKey.USER_ACCOUNT, params.username);
         // 记录登录状态
-        localStorage.setItem(USER_STATUS, 'login');
+        storage.setItem(StorageKey.USER_STATUS, 'login');
         // 跳转首页
         window.location.href = defaultRoute;
     }
@@ -57,7 +60,8 @@ export default function LoginForm() {
             setLoading(false);
             return;
         }
-        switch (res.code) {
+        const {code, data} = res;
+        switch (code) {
             case StatusCode.PASSWORD_ERROR:
                 setErrorMessage(StatusMessage.PASSWORD_ERROR);
                 break;
@@ -65,7 +69,7 @@ export default function LoginForm() {
                 setErrorMessage(StatusMessage.ACCOUNT_DISABLED);
                 break;
             case StatusCode.OK:
-                afterLoginSuccess(params);
+                afterLoginSuccess(params, data.token);
                 break;
             default:
                 setErrorMessage(StatusMessage.UNKNOWN_ERROR);

@@ -18,64 +18,85 @@ declare namespace API {
         password: string;
     }
 
-    type  Comment = {
+    type  Message = {
         id?: number;
-        openid?: string;
-        stuName: string;
-        parentId?: string;
+        fingerprint?: string;
+        stuId?: string;
         content: string;
-        createdAt?: any;
-        hasReply?: boolean;
+        parentId?: string;
+        anonymous?: boolean;
+        replied?: boolean;
+        isReply?: boolean;
+        deleted?: boolean;
+        createdAt?: string;
     }
 
     type LostAndFound = {
         id: number;
-        itemName: string;
+        fingerprint: string;
+        stuId?: string;
+        title: string;
+        tags?: string;
         location?: string;
-        lostTime?: string;
+        date?: string;
         description: string;
         images?: string;
-        stuName?: string;
-        contact: string;
-        status?: boolean;
+        contactMethod: string;
+        contactNumber: string;
+        type: string;
+        status?: string;
+        deleted?: string;
+        createdAt?: string;
     }
 
     type PhoneBook = {
         id?: number;
-        deptName: string;
+        type: string;
+        name: string;
         phone: string;
+        deleted?: boolean;
+        createdAt?: string;
     }
 
     type  RepairItem = {
         id: number;
+        fingerprint: string;
+        stuId?: string;
         itemName: string;
-        description?: string;
+        description: string;
         dorm: string;
         room: string;
-        stuName?: string;
-        contact: string;
-        time: string;
-        createdAt: string;
-        status: boolean;
+        contactNumber: string;
+        status?: boolean;
+        deleted?: string;
+        createdAt?: string;
     }
 
     type Reservation = {
         id: number;
+        fingerprint: string;
+        stuId?: string;
         type: string;
-        stuName: string;
-        sdept: string;
         content: string;
-        time: string;
-        contact: string;
-        status: boolean;
+        date: string;
+        contactMethod: string;
+        contactNumber: string;
+        status?: boolean;
+        deleted?: boolean;
+        createdAt?: string;
     }
 
     type EvalItem = {
         id: number;
-        canteenName: string;
-        content: string;
+        fingerprint: string;
+        stuId?: string;
+        canteen: string;
+        ratings: string;
+        idea?: string;
+        lowScoreItems: string;
+        highScoreItems: string;
         totalScore: number;
-        mainProblem: string;
-        createdAt: string;
+        deleted?: boolean;
+        createdAt?: string;
     }
 }

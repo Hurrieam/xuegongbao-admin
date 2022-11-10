@@ -1,4 +1,4 @@
-import {post} from "@/api/_config";
+import {reqForPost} from "@/api/_config";
 import {encrypt} from "@/utils/encryptor";
 
 /**
@@ -6,7 +6,7 @@ import {encrypt} from "@/utils/encryptor";
  * @param usernameAndPassword
  */
 export const login = async (usernameAndPassword: API.LoginForm): Promise<API.Response> => {
-    return await post(`/login`, {
+    return await reqForPost(`/login`, {
         username: usernameAndPassword.username,
         password: encrypt(usernameAndPassword.password)
     });

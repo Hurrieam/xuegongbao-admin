@@ -14,18 +14,18 @@ import {
 import {IconArrowFall, IconArrowRise, IconDelete} from '@arco-design/web-react/icon';
 import {formatDate} from "@/utils/date";
 import {StatusCode, StatusMessage} from "@/constant/status";
-import EvalDetail from "@/pages/evaluate/EvalDetail";
-import {deleteEvalById, getEvalList, getEvalSummary} from "@/api/eval";
+import EvalModal from "@/pages/evaluate/EvalModal";
+import {deleteEval, findEvalList, findEvalSummary} from "@/api/canteen-eval";
 
 const Row = Grid.Row;
 const Col = Grid.Col;
 
 interface ISummaryItem {
-    canteenName: string;  // CS, ZK, MZ, CY
+    canteen: string;  // CS, ZK, MZ, CY
     totalScore: number;
     totalCount: number;
     avgScore: number;
-    rate: number;
+    changeRate: number;
 }
 
 const CanteenEval: React.FC = () => {
@@ -59,7 +59,7 @@ const CanteenEval: React.FC = () => {
 
     // 获取总结数据
     const fetchSummaryData = async () => {
-        const {code, data}: API.Response = await getEvalSummary();
+        const {code, data}: API.Response = await findEvalSummary();
 
         if (code != StatusCode.OK) {
             Message.error(StatusMessage.FETCH_DATA_ERROR);
@@ -73,7 +73,7 @@ const CanteenEval: React.FC = () => {
 
     // 获取评价列表
     const fetchData = async () => {
-        const {code, data}: API.Response = await getEvalList(
+        const {code, data}: API.Response = await findEvalList(
             (pagination.current - 1) * pagination.pageSize,
             pagination.pageSize
         );
@@ -98,7 +98,7 @@ const CanteenEval: React.FC = () => {
     }
 
     const onDelete = async (record: API.EvalItem) => {
-        const {code}: API.Response = await deleteEvalById(record.id);
+        const {code}: API.Response = await deleteEval(record.id);
         if (code != StatusCode.OK) {
             Message.error(StatusMessage.DELETE_FAILED);
             return;
@@ -122,14 +122,14 @@ const CanteenEval: React.FC = () => {
         },
         {
             title: "餐厅名称",
-            dataIndex: 'canteenName',
+            dataIndex: 'canteen',
             render: (value: string) => <span>{mapper[value]}</span>
         },
-        {
-            title: "主要问题",
-            dataIndex: 'mainProblem',
-            render: (value: string) => <span>{value}</span>
-        },
+        // {
+        //     title: "主要问题",
+        //     dataIndex: 'mainProblem',
+        //     render: (value: string) => <span>{value}</span>
+        // },
         {
             title: "评价分数",
             dataIndex: "totalScore",
@@ -180,13 +180,13 @@ const CanteenEval: React.FC = () => {
                                     </Col>
                                     <Col span={16}>
                                         <Statistic
-                                            title={mapper[item.canteenName]}
-                                            value={item.rate * 100}
+                                            title={mapper[item.canteen]}
+                                            value={item.changeRate * 100}
                                             precision={2}
-                                            prefix={item.rate >= 0 ? <IconArrowRise/> : <IconArrowFall/>}
+                                            prefix={item.changeRate >= 0 ? <IconArrowRise/> : <IconArrowFall/>}
                                             suffix='分'
                                             countUp
-                                            styleValue={{color: item.rate >= 0 ? '#00b42a' : '#ee4d38'}}
+                                            styleValue={{color: item.changeRate >= 0 ? '#00b42a' : '#ee4d38'}}
                                         />
                                     </Col>
                                 </Row>
@@ -207,7 +207,7 @@ const CanteenEval: React.FC = () => {
                     onChange={onChangeTable}
                 />
             </Card>
-            <EvalDetail visible={visible} data={currentItem} hidden={doHidden}/>
+            <EvalModal visible={visible} data={currentItem?.id} hidden={doHidden}/>
         </>
     )
 }

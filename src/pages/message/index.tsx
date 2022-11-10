@@ -1,17 +1,17 @@
 import React, {useEffect, useState} from 'react';
 import {Badge, Button, Card, Message, PaginationProps, Popconfirm, Space, Table} from '@arco-design/web-react';
 import {IconDelete} from '@arco-design/web-react/icon';
-import CommentDetail from "@/pages/comment/CommentDetail";
 import {formatDate} from "@/utils/date";
 import {substrAndEllipsis} from "@/utils/string";
-import {deleteCommentById, getCommentList} from "@/api/comment";
 import {StatusCode, StatusMessage} from "@/constant/status";
+import {deleteMessage, findMessageList} from "@/api/message";
+import MessageModal from "@/pages/message/MessageModal";
 
-const Comment = () => {
-    const [data, setData] = useState<API.Comment[]>([]);
+const MessagePage = () => {
+    const [data, setData] = useState<API.Message[]>([]);
     const [loading, setLoading] = useState<boolean>(true);
     const [visible, setVisible] = useState(false);
-    const [currentItem, setCurrentItem] = useState<API.Comment>();
+    const [currentItem, setCurrentItem] = useState<API.Message>();
     const [pagination, setPagination] = useState<PaginationProps>({
         sizeCanChange: false,
         showTotal: true,
@@ -28,7 +28,7 @@ const Comment = () => {
     }, [pagination.current]);
 
     const fetchData = async () => {
-        const {code, data}: API.Response = await getCommentList(
+        const {code, data}: API.Response = await findMessageList(
             (pagination.current - 1) * pagination.pageSize,
             pagination.pageSize
         );
@@ -47,13 +47,15 @@ const Comment = () => {
         setLoading(false);
     }
 
-    const onView = (record: API.Comment) => {
+    // const onView = (record: API.Message) => {
+    const onView = (record) => {
         setCurrentItem(record);
         setVisible(true);
     }
 
-    const onDelete = async (record: API.Comment) => {
-        const {code}: API.Response = await deleteCommentById(record.id);
+    // const onDelete = async (record: API.Message) => {
+    const onDelete = async (record) => {
+        const {code}: API.Response = await deleteMessage(record.id);
         if (code != StatusCode.OK) {
             Message.error(StatusMessage.DELETE_FAILED);
             return;
@@ -63,7 +65,7 @@ const Comment = () => {
     }
 
     const doCallback = (id: number) => {
-        setData(data.map(item => item.id === id ? {...currentItem, hasReply: true} : item));
+        setData(data.map(item => item.id === id ? {...currentItem, replied: true} : item));
     }
 
     const doHidden = () => {
@@ -102,7 +104,7 @@ const Comment = () => {
         },
         {
             title: "是否回复",
-            dataIndex: 'hasReply',
+            dataIndex: 'replied',
             render: (value: boolean) => (
                 <>
                     {
@@ -115,13 +117,13 @@ const Comment = () => {
             title: "操作",
             dataIndex: 'operations',
             width: 200,
-            render: (_, record: API.Comment) => (
+            render: (_, record: API.Message) => (
                 <>
                     <Space>
-                        <Button type="primary" size="small" onClick={() => onView(record)}>回复</Button>
+                        <Button type="primary" size="small" onClick={onView.bind(this, record)}>回复</Button>
                         <Popconfirm
                             title='确定删除吗?'
-                            onOk={onDelete.bind(record)}
+                            onOk={onDelete.bind(this, record)}
                         >
                             <Button type="primary" icon={<IconDelete/>} status="danger" size="small">删除</Button>
                         </Popconfirm>
@@ -145,9 +147,9 @@ const Comment = () => {
                     onChange={onChangeTable}
                 />
             </Card>
-            <CommentDetail visible={visible} data={currentItem?.id} callback={doCallback} hidden={doHidden}/>
+            <MessageModal visible={visible} data={currentItem?.id} callback={doCallback} hidden={doHidden}/>
         </>
     );
 }
 
-export default Comment;
+export default MessagePage;

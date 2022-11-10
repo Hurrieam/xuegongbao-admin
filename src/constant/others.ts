@@ -1,1 +1,2 @@
-export const ADMIN_OPENID = "00000000"
+export const ADMIN_STU_ID = "ADMINISTRATOR"
+export const ADMIN_FINGERPRINT = "00000000"

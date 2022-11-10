@@ -2,24 +2,23 @@ import React, {Fragment, useEffect, useState} from 'react';
 import {Input, Message, Modal, Spin} from '@arco-design/web-react';
 import styles from "./style/index.module.less";
 import {formatDate} from "@/utils/date";
-import {addComment, getCommentDetailsById, updateCommentStatusById} from "@/api/comment";
 import {StatusCode, StatusMessage} from "@/constant/status";
-import {ADMIN_OPENID} from "@/constant/others";
+import {createMessage, findMessageDetail, updateMessageStatus} from "@/api/message";
 
 const TextArea = Input.TextArea;
 
-function CommentDetail({visible, data: id, callback, hidden}: API.DetailModalProps) {
+function MessageModal({visible, data: id, callback, hidden}: API.DetailModalProps) {
     const [replyContent, setReplyContent] = useState<string>('');
-    const [loading, setLoading] = React.useState(false);
-    const [comments, setComments] = useState<API.Comment[]>([]);
+    const [loading, setLoading] = useState(false);
+    const [comments, setComments] = useState<API.Message[]>([]);
     useEffect(() => {
-        if (!id) return;
         fetchData(id);
     }, [id]);
 
     const fetchData = async (id: number) => {
+        if (!id) return;
         setLoading(true);
-        const {code, data} = await getCommentDetailsById(id);
+        const {code, data} = await findMessageDetail(id);
         if (code != StatusCode.OK) {
             Message.error(StatusMessage.FETCH_DATA_ERROR);
             return;
@@ -35,18 +34,18 @@ function CommentDetail({visible, data: id, callback, hidden}: API.DetailModalPro
             Message.error("请输入回复内容");
             return;
         }
-        const reply: API.Comment = {
-            stuName: "Administrator",
+        const reply: API.Message = {
             content: replyContent,
-            parentId: id
+            parentId: id,
+            isReply: true
         };
         try {
-            const {code}: API.Response = await addComment(reply);
+            const {code}: API.Response = await createMessage(reply);
             if (code != StatusCode.OK) {
                 Message.error(`回复留言失败，错误码：${code}`);
                 return;
             }
-            await updateCommentStatusById(id);
+            await updateMessageStatus(id);
             await fetchData(id);
             callback(id);
             Message.success('回复成功!');
@@ -82,7 +81,7 @@ function CommentDetail({visible, data: id, callback, hidden}: API.DetailModalPro
                             return (
                                 <Fragment key={index}>
                                     {
-                                        item.openid != ADMIN_OPENID ? (
+                                        !item.isReply ? (
                                             <div className={styles.comment_item}>
                                                 <span className={styles.comment_content}>{item.content}</span>
                                                 <span
@@ -115,4 +114,4 @@ function CommentDetail({visible, data: id, callback, hidden}: API.DetailModalPro
     )
 }
 
-export default CommentDetail;
+export default MessageModal;

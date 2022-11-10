@@ -12,7 +12,7 @@ const System: React.FC = () => {
         value: '2022-04-25'
     }, {
         label: '当前版本',
-        value: 'v1.0.0',
+        value: 'v2.0.0',
     }];
     return (
         <>

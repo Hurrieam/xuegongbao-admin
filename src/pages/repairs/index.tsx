@@ -1,14 +1,12 @@
 import React, {useEffect, useState} from 'react';
 import {Badge, Button, Card, Message, PaginationProps, Popconfirm, Space, Table} from '@arco-design/web-react';
 import {IconDelete} from '@arco-design/web-react/icon';
-import RepairDetail from "@/pages/repairs/RepairDetail";
-import {deleteRepairItemById, getRepairList} from "@/api/dorm-repair";
 import {formatDate} from "@/utils/date";
 import {StatusCode, StatusMessage} from "@/constant/status";
+import {deleteRepairItem, findRepairList} from "@/api/dorm-repair";
+import RepairModal from "@/pages/repairs/RepairModal";
 
-
-
-const Repairs: React.FC = () => {
+const DormRepairPage: React.FC = () => {
     const [data, setData] = useState<API.RepairItem[]>([]);
     const [loading, setLoading] = useState<boolean>(true);
     const [visible, setVisible] = useState<boolean>(false);
@@ -27,7 +25,7 @@ const Repairs: React.FC = () => {
 
     const fetchData = async () => {
         setLoading(true);
-        const {code, data}: API.Response = await getRepairList(
+        const {code, data}: API.Response = await findRepairList(
             (pagination.current - 1) * pagination.pageSize,
             pagination.pageSize
         );
@@ -51,7 +49,7 @@ const Repairs: React.FC = () => {
     }
 
     const onDelete = async (record: API.RepairItem) => {
-        const {code}: API.Response = await deleteRepairItemById(record.id);
+        const {code}: API.Response = await deleteRepairItem(record.id);
         if (code != StatusCode.OK) {
             Message.error(StatusMessage.DELETE_FAILED);
             return;
@@ -113,10 +111,10 @@ const Repairs: React.FC = () => {
             render: (_, record: API.RepairItem) => (
                 <>
                     <Space>
-                        <Button type="primary" size="small" onClick={() => onView(record)}>查看</Button>
+                        <Button type="primary" size="small" onClick={onView.bind(this, record)}>查看</Button>
                         <Popconfirm
                             title='确定删除吗?'
-                            onOk={() => onDelete(record)}
+                            onOk={onDelete.bind(this, record)}
                         >
                             <Button type="primary" icon={<IconDelete/>} status="danger" size="small">删除</Button>
                         </Popconfirm>
@@ -140,9 +138,9 @@ const Repairs: React.FC = () => {
                     onChange={onChangeTable}
                 />
             </Card>
-            <RepairDetail visible={visible} data={currentItem} callback={doCallback} hidden={doHidden}/>
+            <RepairModal visible={visible} data={currentItem?.id} callback={doCallback} hidden={doHidden}/>
         </>
     );
 }
 
-export default Repairs;
+export default DormRepairPage;
