@@ -30,6 +30,10 @@ myAxios.interceptors.response.use(
         return response.data;
     },
     error => {
+        if (!error.response){
+            Message.error("网络异常，请稍后再试");
+            return Promise.reject(error);
+        }
         // 如果是401，跳转到登录页
         if (error.response.status === 401) {
             Message.error("登录已过期，请重新登录");
