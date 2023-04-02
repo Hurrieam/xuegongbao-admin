@@ -3,6 +3,7 @@ import {Descriptions, Message, Modal, Spin, Tag} from '@arco-design/web-react';
 import {formatDate} from "@/utils/date";
 import {StatusCode, StatusMessage} from "@/constant/status";
 import {findRepairDetail, updateRepairItemStatus} from "@/api/dorm-repair";
+import UserPopover from "@/components/UserPopover";
 
 const RepairModal: React.FC<API.DetailModalProps> = ({visible, data: id, callback, hidden}: API.DetailModalProps) => {
     const [data, setData] = useState<API.RepairItem>();
@@ -61,7 +62,7 @@ const RepairModal: React.FC<API.DetailModalProps> = ({visible, data: id, callbac
             value: data.room
         }, {
             label: '学生姓名',
-            value: data.owner ? `${data.owner?.stuName} (${data.owner?.stuId})` : ""
+            value: <UserPopover user={data.owner}/>
         }, {
             label: '联系方式',
             value: `[电话] ${data.contactNumber}`

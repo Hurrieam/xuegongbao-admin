@@ -100,3 +100,10 @@ declare namespace API {
         createdAt?: string;
     }
 }
+
+interface User {
+    id: number;
+    stuClass: string;
+    stuId: string;
+    stuName: string;
+}

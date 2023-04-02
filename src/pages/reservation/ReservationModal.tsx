@@ -3,6 +3,7 @@ import {Descriptions, Message, Modal, Spin, Tag} from '@arco-design/web-react';
 import {StatusCode, StatusMessage} from "@/constant/status";
 import {findReservationDetail, updateReservationStatus} from "@/api/reservation";
 import {formatDate} from "@/utils/date";
+import UserPopover from "@/components/UserPopover";
 
 const ReservationModal: React.FC<API.DetailModalProps> = ({visible, data: id, callback, hidden}) => {
     const [data, setData] = useState<API.Reservation>();
@@ -52,7 +53,7 @@ const ReservationModal: React.FC<API.DetailModalProps> = ({visible, data: id, ca
             value: data.type,
         }, {
             label: '学生姓名',
-            value: `${data.owner?.stuName} (${data.owner?.stuId})`
+            value: <UserPopover user={data.owner}/>
         }, {
             label: '所在班级',
             value: data.owner?.stuClass
