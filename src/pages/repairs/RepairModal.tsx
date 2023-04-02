@@ -5,11 +5,10 @@ import {StatusCode, StatusMessage} from "@/constant/status";
 import {findRepairDetail, updateRepairItemStatus} from "@/api/dorm-repair";
 
 const RepairModal: React.FC<API.DetailModalProps> = ({visible, data: id, callback, hidden}: API.DetailModalProps) => {
-    const [status, setStatus] = useState<boolean>(false);
     const [data, setData] = useState<API.RepairItem>();
     const [loading, setLoading] = useState(false);
     useEffect(() => {
-        fetchData(id);
+        fetchData(id).finally();
     }, [id]);
 
     const fetchData = async (id: number) => {
@@ -33,7 +32,6 @@ const RepairModal: React.FC<API.DetailModalProps> = ({visible, data: id, callbac
                 Message.error(StatusMessage.UPDATE_STATUS_ERROR);
                 return;
             }
-            setStatus(true);
             data.status = true;
             callback && callback(data);
             Message.success(StatusMessage.UPDATE_STATUS_OK);
@@ -69,10 +67,10 @@ const RepairModal: React.FC<API.DetailModalProps> = ({visible, data: id, callbac
             value: `[电话] ${data.contactNumber}`
         }, {
             label: '报修时间',
-            value: formatDate(data.created_at).substring(0, 10)
+            value: formatDate(data.updatedAt)
         }, {
             label: '当前状态',
-            value: status ? (<Tag color="#00b42a">已处理</Tag>) : (<Tag color="#f53f3f">未处理</Tag>)
+            value: data.status ? (<Tag color="#00b42a">已处理</Tag>) : (<Tag color="#f53f3f">未处理</Tag>)
         }];
     }
     return (
@@ -84,9 +82,9 @@ const RepairModal: React.FC<API.DetailModalProps> = ({visible, data: id, callbac
             autoFocus={false}
             focusLock={true}
             maskClosable={false}
-            okText='修改状态'
+            okText='完成'
             okButtonProps={{
-                disabled: status
+                disabled: data?.status && true
             }}
         >
             <Spin loading={loading} style={{width: "100%"}}>

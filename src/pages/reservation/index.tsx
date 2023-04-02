@@ -73,8 +73,10 @@ const Reservation: React.FC = () => {
 
     const columns = [
         {
-            title: "ID",
-            dataIndex: 'id'
+            title: "序号",
+            render: (value, record, index) => (
+                <span>{(pagination.current - 1) * pagination.pageSize + index + 1}</span>
+            )
         },
         {
             title: "咨询类型",

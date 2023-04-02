@@ -5,11 +5,10 @@ import {findReservationDetail, updateReservationStatus} from "@/api/reservation"
 import {formatDate} from "@/utils/date";
 
 const ReservationModal: React.FC<API.DetailModalProps> = ({visible, data: id, callback, hidden}) => {
-    const [status, setStatus] = useState<boolean>(false);
     const [data, setData] = useState<API.Reservation>();
     const [loading, setLoading] = React.useState(false);
     useEffect(() => {
-        fetchData(id);
+        fetchData(id).finally();
     }, [id]);
 
     const fetchData = async (id: number) => {
@@ -33,7 +32,6 @@ const ReservationModal: React.FC<API.DetailModalProps> = ({visible, data: id, ca
                 Message.error(StatusMessage.UPDATE_STATUS_ERROR);
                 return;
             }
-            setStatus(true);
             data.status = true;
             callback && callback(data);
             Message.success(StatusMessage.UPDATE_STATUS_OK);
@@ -63,13 +61,13 @@ const ReservationModal: React.FC<API.DetailModalProps> = ({visible, data: id, ca
             value: data.content
         }, {
             label: '预定时间',
-            value: formatDate(data.date).substring(0, 10)
+            value: formatDate(data.date, "yyyy年MM月dd日")
         }, {
             label: '联系方式',
             value: `[${data.contactMethod}] ${data.contactNumber}`
         }, {
             label: '当前状态',
-            value: status ? (<Tag color="#00b42a">已处理</Tag>) : (<Tag color="#f53f3f">未处理</Tag>)
+            value: data.status ? (<Tag color="#00b42a">已处理</Tag>) : (<Tag color="#f53f3f">未处理</Tag>)
         }];
     }
     return (
@@ -81,9 +79,9 @@ const ReservationModal: React.FC<API.DetailModalProps> = ({visible, data: id, ca
             autoFocus={false}
             focusLock={true}
             maskClosable={false}
-            okText='修改状态'
+            okText='完成'
             okButtonProps={{
-                disabled: status
+                disabled: data?.status && true
             }}
         >
             <Spin loading={loading} style={{width: "100%"}}>
