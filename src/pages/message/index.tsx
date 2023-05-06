@@ -6,6 +6,7 @@ import {substrAndEllipsis} from "@/utils/string";
 import {StatusCode, StatusMessage} from "@/constant/status";
 import {deleteMessage, findMessageList} from "@/api/message";
 import MessageModal from "@/pages/message/MessageModal";
+import UserPopover from "@/components/UserPopover";
 
 const MessagePage = () => {
     const [data, setData] = useState<API.Message[]>([]);
@@ -78,14 +79,16 @@ const MessagePage = () => {
 
     const columns = [
         {
-            title: "ID",
-            dataIndex: 'id'
+            title: "序号",
+            render: (value, record, index) => (
+                <span>{(pagination.current - 1) * pagination.pageSize + index + 1}</span>
+            )
         },
         {
-            title: "姓名",
+            title: "学生姓名",
             dataIndex: 'stuName',
-            render: (value: string) => (
-                <span>{value ? value : "***"}</span>
+            render: (value, record, index) => (
+                <UserPopover user={record.owner}/>
             )
         },
         {

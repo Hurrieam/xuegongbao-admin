@@ -5,6 +5,7 @@ import {formatDate} from "@/utils/date";
 import {StatusCode, StatusMessage} from "@/constant/status";
 import {deleteRepairItem, findRepairList} from "@/api/dorm-repair";
 import RepairModal from "@/pages/repairs/RepairModal";
+import UserPopover from "@/components/UserPopover";
 
 const DormRepairPage: React.FC = () => {
     const [data, setData] = useState<API.RepairItem[]>([]);
@@ -72,12 +73,21 @@ const DormRepairPage: React.FC = () => {
 
     const columns = [
         {
-            title: "ID",
-            dataIndex: 'id'
+            title: "序号",
+            render: (value, record, index) => (
+                <span>{(pagination.current - 1) * pagination.pageSize + index + 1}</span>
+            )
         },
         {
             title: "报修内容",
             dataIndex: 'itemName',
+        },
+        {
+            title: "提交人",
+            dataIndex: 'stuName',
+            render: (value, record, index) => (
+                <UserPopover user={record.owner}/>
+            )
         },
         {
             title: "宿舍楼",

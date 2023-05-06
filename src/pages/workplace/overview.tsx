@@ -37,10 +37,10 @@ const StatisticItem: React.FC<StatisticItemType> = (props: StatisticItemType) =>
 }
 
 type DataType = {
-    dayUsers: number;
-    dayMessages: number;
-    dayRepairs: number;
-    dayReservations: number;
+    users: number;
+    messages: number;
+    repairs: number;
+    reservations: number;
 };
 type IChartData = {
     date: string;
@@ -49,10 +49,10 @@ type IChartData = {
 
 function Overview() {
     const [data, setData] = useState<DataType>({
-        dayUsers: 0,
-        dayMessages: 0,
-        dayRepairs: 0,
-        dayReservations: 0,
+        users: 0,
+        messages: 0,
+        repairs: 0,
+        reservations: 0,
     });
     const [loading, setLoading] = useState<boolean>(true);
     const [chartData, setChartData] = useState<IChartData[]>([]);
@@ -98,17 +98,17 @@ function Overview() {
                     <StatisticItem
                         icon={<IconCalendar/>}
                         title="今日使用人数"
-                        count={data.dayUsers}
+                        count={data.users}
                         loading={loading}
-                        unit="个"
+                        unit="人"
                     />
                 </Col>
                 <Divider type="vertical" className={styles.divider}/>
                 <Col flex={1}>
                     <StatisticItem
                         icon={<IconComments/>}
-                        title="今日留言数"
-                        count={data.dayMessages}
+                        title="未回复留言"
+                        count={data.messages}
                         loading={loading}
                         unit="条"
                     />
@@ -117,8 +117,8 @@ function Overview() {
                 <Col flex={1}>
                     <StatisticItem
                         icon={<IconContent/>}
-                        title="今日报修单数"
-                        count={data.dayRepairs}
+                        title="未处理报修"
+                        count={data.repairs}
                         loading={loading}
                         unit="单"
                     />
@@ -127,10 +127,10 @@ function Overview() {
                 <Col flex={1}>
                     <StatisticItem
                         icon={<IconIncrease/>}
-                        title="今日预约数"
-                        count={data.dayReservations}
+                        title="未处理预约"
+                        count={data.reservations}
                         loading={loading}
-                        unit="个"
+                        unit="单"
                     />
                 </Col>
             </Row>

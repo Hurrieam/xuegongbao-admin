@@ -6,6 +6,7 @@ import {StatusCode, StatusMessage} from "@/constant/status";
 import ReservationModal from "@/pages/reservation/ReservationModal";
 import {deleteReservation, findReservationList} from "@/api/reservation";
 import {formatDate} from "@/utils/date";
+import UserPopover from "@/components/UserPopover";
 
 const Reservation: React.FC = () => {
     const [data, setData] = useState<API.Reservation[]>([]);
@@ -73,8 +74,10 @@ const Reservation: React.FC = () => {
 
     const columns = [
         {
-            title: "ID",
-            dataIndex: 'id'
+            title: "序号",
+            render: (value, record, index) => (
+                <span>{(pagination.current - 1) * pagination.pageSize + index + 1}</span>
+            )
         },
         {
             title: "咨询类型",
@@ -83,7 +86,9 @@ const Reservation: React.FC = () => {
         {
             title: "学生姓名",
             dataIndex: 'stuName',
-            render: (value) => value ? value : '***',
+            render: (value, record, index) => (
+                <UserPopover user={record.owner}/>
+            )
         },
         {
             title: "内容",
